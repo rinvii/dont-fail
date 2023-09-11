@@ -9,7 +9,7 @@ const config = {
   project: {
     link: "https://github.com/rinvii/dont-fail",
   },
-  docsRepositoryBase: "https://github.com/rinvii/dont-fail/tree/main",
+  docsRepositoryBase: "https://github.com/rinvii/dont-fail/tree/main/apps/web",
   useNextSeoProps() {
     return {
       titleTemplate: "%s - CS 305",
