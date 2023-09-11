@@ -1,0 +1,205 @@
+---
+title: Pointers
+description: Learn about pointers in C.
+---
+
+import { Callout } from "nextra/components";
+
+# Pointers
+
+Before we learn about pointers, let's first learn about memory. Memory is divided into bytes with each byte capable of storing 8 bits. Each byte has a unique _address_. Addresses are just numbers that identify a byte. For example, the address of the first byte of memory is 0, the second byte is 1, the third byte is 2, and so on. Usually, the address is written in hexadecimal, so the first byte of memory is address 0x0, the second byte is 0x1, the third byte is 0x2, and so on.
+
+Here is a diagram that shows hypothetical memory. Each box represents a byte of memory. The address of each byte is written above the box. The value of each byte (5 in binary) is written inside the box.
+
+![Memory](/pointer-memory-diagram.jpg)
+
+## What is a pointer?
+
+<Callout>A pointer is an address of a byte of memory.</Callout>
+
+Note: A pointer is always an address, but an address is not always a pointer.
+
+If a pointer is just an address, then a _pointer variable_ is just a variable that stores that address. When we store the address of a variable `x` in a pointer variable `p`, we say that `p` _points to_ `x`.
+
+## Declaring Pointer Variables
+
+To declare a pointer variable, we use the `*` operator. For example, to declare a pointer variable `p` that points to nowhere, we write:
+
+```c
+int *p;
+```
+
+C requires that every pointer variable point only to a thing of a specific type. In the example above, `p` can only point to a thing of type `int`:
+
+```c
+int *p;     // points only to integers
+char *q;    // points only to characters
+double *r;  // points only to doubles
+```
+
+Even more, a pointer variable can point to a pointer. This is called a double pointer:
+
+```c
+int **p;    // points only to pointers that point to integers
+```
+
+For example, the diagram below shows an uninitialized double pointer that is able to point to `pointer_variable1` and `pointer_variable2` as indicated by the dashed lines.
+
+![Uninitialized double pointer](/uninitialized-double-pointer.jpg)
+
+## Address and Indirection Operators
+
+The _address operator_ `&` returns the address of a variable. For example, if `x` is a variable, then `&x` is the address of `x`. For this we say "address-of" in the context of getting a variable's address.
+
+The _indirection operator_ or _dereference operator_ `*` gains access to the value of a variable that a pointer points to. For example, if `p` is a pointer, then `*p` is the value of the variable that `p` points to. For this we use "indirection" or "dereference" in the context of getting a variable's value.
+
+### Address Operator
+
+Let's initialize a pointer variable that points to nowhere in particular and an integer variable `x`.
+
+Using the address operator, we can assign the address of `x` to `p`:
+
+```c
+int *p;
+int x = 1;
+
+// assigning the address of x to p
+
+p = &x;
+```
+
+This is what the memory looks like:
+
+![Address memory example](/address-memory-example.jpg)
+
+### Indirection Operator
+
+Using the indirection operator, we can assign the value of `x` to `y`:
+
+```c
+int x = 0;
+int *p = &x; // IMPORTANT: here, * is part of the type specification
+
+// assigning the value of x to y
+
+*p = 1; // same as x = 1. IMPORTANT: here, * is part of the type specification
+```
+
+Memory diagram:
+
+![Indirection memory example](/indirection-memory-example.jpg)
+
+Note the difference in using indirection on the left-hand-side (LHS) or right-hand-side (RHS) of an assignment. Note also, the difference between using `*` in a declaration/type specification and in an expression.
+
+<Callout type="info">
+  When `*` is used in a declaration, it is part of the type specification. When
+  `*` is used in an expression, it is the indirection operator.
+</Callout>
+
+<Callout type="info">
+  On the LHS, it signifies that you're modifying the value at the memory address
+  pointed to by the pointer.
+</Callout>
+
+<Callout type="info">
+  On the RHS, it means you're retrieving the value from the memory address
+  pointed to by the pointer.
+</Callout>
+
+For example:
+
+```c
+// LHS: modifies the value at the memory address pointed to by the pointer
+int x = 5;
+int *p = &x; // IMPORTANT: here, * is part of the type specification
+*p = 10;     // IMPORTANT: here, * is part of the expression
+
+// RHS: retrieves the value from the memory address pointed to by the pointer
+int x = 5;
+int *p = &x;
+int y = *p;  // y will be assigned the value 5, which is the value stored at the address pointed to by p
+```
+
+### Incorrect Examples
+
+<Callout type="error">
+  Never apply the indirection to an uninitialized pointer variable. Doing so
+  will result in undefined behavior.
+</Callout>
+
+The example below may print garbage, crash, or do something else entirely:
+
+```c
+int *p;
+printf("%d\n", *p); // WRONG
+```
+
+Below, if `p` happens to contain a valid address, the following assignment will attempt to modify data stored at that address:
+
+```c
+int *p;
+*p = 5; // WRONG
+```
+
+## Pointer Assignment
+
+We can use the assignment operator to copy pointers, provided that they have the same type:
+
+```c
+int i = 5;
+int j = 10;
+int *p = &i; // p points to i
+int *q = p;  // q points to i
+p = &j;      // p points to j, q still points to i
+q = p;       // q points to j
+```
+
+## Pointers as Function Parameters
+
+If we want to modify an argument passed to a function, we can pass a pointer to that argument. For example, the following function takes a pointer to an integer and increments the value of the integer:
+
+```c
+void increment(int *p) {
+  *p = *p + 1;
+}
+
+int main() {
+  int x = 0;
+  increment(&x);
+  printf("%d\n", x); // prints 1
+}
+```
+
+### Using `const` to Prevent Modification
+
+The content of this section is not yet ready. Check back in a few days.
+
+## Pointers as Function Return Values
+
+We can write functions that return pointers. For example, the following function takes in pointers to two integers and returns a pointer to the larger of the two integers:
+
+```c
+int *max(int *a, int *b) {
+  if (*a > *b) {
+    return a;
+  } else {
+    return b;
+  }
+}
+
+int main() {
+  int x = 1;
+  int y = 2;
+  int *p = max(&x, &y);
+
+  printf("%d\n", *p); // prints 2
+}
+```
+
+## Size of a Pointer
+
+The content of this section is not yet ready. Check back in a few days.
+
+```
+
+```

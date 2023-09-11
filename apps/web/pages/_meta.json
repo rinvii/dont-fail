@@ -1,0 +1,16 @@
+{
+  "*": {
+    "type": "page"
+  },
+  "index": {
+    "display": "hidden",
+    "theme": {
+      "sidebar": false,
+      "toc": true
+    }
+  },
+  "docs": {
+    "title": "Docs",
+    "type": "page"
+  }
+}

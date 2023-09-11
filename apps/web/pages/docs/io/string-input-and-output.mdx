@@ -1,0 +1,204 @@
+---
+title: String I/O
+description: Learn how to read and write strings from/to standard input/output.
+---
+
+# String I/O
+
+In this section, we will learn how to read and write strings from/to standard input/output. In the next section, we will learn how to read and write strings from/to files.
+
+We will describe series of ways to read strings from standard input (streams) including modern functions and deprecated functions.
+
+It's generally recommended to use modern functions, but you may need to use deprecated functions in some cases.
+
+## String Input
+
+### `getline`
+
+The `getline` function is the recommended method for reading text lines from a stream, including standard input.
+
+The function has the following prototype:
+
+```c
+ssize_t getline(char **lineptr, size_t *n, FILE *stream);
+```
+
+The function reads a line from the stream `stream` and stores it into the buffer (a space where computers store things) pointed to by `*lineptr`. The buffer is automatically resized as needed via the `*n` parameter.
+
+The function returns the number of characters read, including the newline character, but not including the terminating null character. If the end-of-file is encountered while attempting to read a character, the `EOF` value is returned. Otherwise, the value -1 is returned if an error occurs.
+
+Notice the double pointer of the first parameter. How come we store the address of the buffer in a double pointer? Why does the function store things in the buffer pointed to by `*lineptr` instead of `lineptr`, `**lineptr` or `&lineptr`? We will dive in this topic in the [Pointers](/docs/pointers) section.
+
+For now, we can understand this by saying that the function is asking for a pointer to a pointer to a character. This is to say, the function is asking for a pointer to a buffer of characters. In other words, the function is asking for a pointer to a string which means the function is asking for the memory address of a string. So the reason why the first parameter is a double pointer is so that the function can adjust what memory address the string (of a buffer of characters) is pointing to.
+
+Here is an example of using the `getline` function:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int bytes_read;
+    int nbytes = 4;  // number of bytes/characters to read
+    char *line = NULL;
+
+    printf("Please enter a line of text: ");
+
+    line = (char *)malloc(nbytes + 1);  // char is 1 byte; same as malloc(sizeof(char) * (nbytes + 1))
+    bytes_read = getline(&line, &nbytes, stdin);
+
+    if (bytes_read == -1) {
+        printf("An error occurred.\n");
+    } else {
+        printf("You entered %d characters.\n", bytes_read - 1);
+        printf("The string you entered is: %s\n", line);
+    }
+
+    free(line);
+
+    return 0;
+}
+```
+
+`nbytes` is the number of bytes/characters to read which is 4. However, the user can enter more than 4 characters. This is because the `getline` function will automatically resize the buffer as needed. This automatic resizing is the significant reason why `getline` is considered safer and more convenient than some other string-reading functions.
+
+For example, this diagram shows how the buffer is resized if the user enters more characters:
+
+![Buffer character diagram](/buffer-character-diagram.jpg)
+
+### `getdelim`
+
+The `getdelim` function is similar to the `getline` function except that it allows you to specify a delimiter character. In fact, `getline` is just a special case of `getdelim` where the delimiter is the newline character:
+
+```c
+bytes_read = getdelim(&line, &nbytes, '\n', stdin);
+```
+
+### `gets` and `fgets`
+
+The content of this section is not yet ready. Check back in a few days.
+
+## Formatted String Input
+
+### `sscanf`
+
+The `sscanf` function is the most commonly used function for reading formatted input from a string. It's behavior is similar to the `printf` function except that `printf` writes to standard output.
+
+This is distinct from the `scanf` function which reads from _standard input_.
+
+The function has the following prototype:
+
+```c
+int sscanf(const char *str, const char *format, ...);
+```
+
+The function reads data from `str` and stores them according to the parameter `format` into the locations given by the additional arguments.
+
+For example using sscanf:
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    char str[] = "Hello 1234";
+    char str2[6];
+    int num;
+
+    sscanf(str, "%s %d", str2, &num);
+
+    printf("str2 = %s\n", str2);
+    printf("num = %d\n", num);
+
+    return 0;
+}
+```
+
+Using a combination of `getline` and `sscanf`:
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int nbytes = 100;
+    char *line = NULL;
+    int num1, num2, num3;
+    int args_assigned = 0;
+    char extra;
+
+    while (args_assigned != 3) {
+        printf("Please enter 3 integers separated by whitespace: ");
+
+        line = (char *)malloc(nbytes + 1);
+        getline(&line, &nbytes, stdin);
+
+        args_assigned =
+            sscanf(line, "%d %d %d %c", &num1, &num2, &num3, &extra);
+
+        if (args_assigned != 3 || (args_assigned == 3 && extra != '\n')) {
+            printf("You did not enter 3 integers. Please try again.\n");
+        }
+
+        free(line);
+    }
+
+    printf("You entered: %d, %d, %d\n", num1, num2, num3);
+
+    return 0;
+}
+```
+
+### `scanf`
+
+The `scanf` function is considered unsafe and should only be used in very specific cases. It's the same as `sscanf` except that it reads from standard input:
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    int num1, num2, num3;
+    int args_assigned = 0;
+    char extra;
+
+    while (args_assigned != 4) {
+        printf("Please enter 3 integers separated by whitespace: ");
+
+        args_assigned = scanf("%d %d %d%c", &num1, &num2, &num3, &extra);
+
+        if (args_assigned != 4 || (args_assigned == 4 && extra != '\n')) {
+            printf("You did not enter 3 integers. Please try again.\n");
+
+            // clear the input buffer
+            while (getchar() != '\n') {
+                ;
+            }
+        } else {
+            printf("You entered: %d, %d, %d\n", num1, num2, num3);
+        }
+    }
+
+    return 0;
+}
+```
+
+The logic is a little different than the combo `getline` and `sscanf` example. This is because `scanf` does not automatically resize the buffer. So we have to manually clear the input buffer if the user enters more than 3 integers or if the user enters a non-integer. Furthermore, if the user inputs something other than an integer or letter, the program will keep reading from standard input until the user enters 3 integers.
+
+### Formatted Input Conversion specifiers
+
+The content of this section is not yet ready. Check back in a few days.
+
+## String Output
+
+### `puts`
+
+The content of this section is not yet ready. Check back in a few days.
+
+### `fputs`
+
+The content of this section is not yet ready. Check back in a few days.
+
+## Formatted String Output
+
+## `printf`
+
+The content of this section is not yet ready. Check back in a few days.

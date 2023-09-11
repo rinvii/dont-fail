@@ -1,0 +1,250 @@
+---
+title: Variables
+description: Learn about variables in C.
+---
+
+# Variables
+
+## A word on naming syntax rules
+
+Variables and functions names must follow these rules:
+
+- They must begin with a letter or underscore. For example: `my_var`, `_my_var`, `myFunc`, `_myFunc`
+- Any lower case letter from a to z
+- Any upper case letter from A to Z
+- Any digit from 0 to 9
+- The underscore character
+
+After the first valid character, the variable name can contain any number of letters, digits, or the underscore character.
+
+## Variables
+
+Every variable in C has a data type that conveys to the compiler what sort of data will be stored in it. Therefore, we must declare the type of a variable before we can use it.
+
+Advantages:
+
+- Gives the compiler precise information about the amount of memory that will be required to store the variable. Read more [below](/docs/c-mechanics/variables#declarations).
+- Allows the compiler to perform type checking on the variable.
+
+## Declarations
+
+### Declaration vs Definition
+
+Declaring in C means telling the compiler about a variable's type and name (or function's return type, name, and parameters) without allocating space for it.
+
+For example, the following are **declarations**:
+
+```c
+extern int a;
+struct person {
+  int age;
+  char *name;
+};
+int print_number(int num);
+```
+
+Definition is when the variable is declared and allocated storage.
+
+Below are **definitions**:
+
+```c
+int a;            // Definition without initialization
+int b = 5;        // Definition with initialization
+struct person p;  // Definition for a variable of type 'struct person'
+int print_number(int num) {
+  printf("%d\n", num); // Function definition
+}
+```
+
+### What to remember
+
+The distinction between declaration and distinction is not important right now. For now, we will use the term "declaration" to refer to both declarations and definitions.
+
+The syntax for declaring a variable is:
+
+```
+type variable_name_1, ..., variable_name_n;
+```
+
+For example:
+
+```c
+int a, b, c;
+long double earth_mass, moon_mass, venus_mass;
+unsigned int num_students;
+
+long city_pop, state_pop;
+city_pop = state_pop = 100;
+
+short moon_landing = 1969;
+
+float temp1, temp2, temp3;
+temp1 = 98.6;
+temp2 = 32.0;
+temp3 = 212.0;
+
+char letterA = 'A'; // Single quotes for characters
+char letterB = 'B'; // Single quotes for characters
+char letterC = 'C'; // Single quotes for characters
+```
+
+## Initialization
+
+Assigning a variable its initial value is called initialization. For example:
+
+```c
+int initial_year = 2003;
+float percent_complete = 89.5;
+```
+
+The above is compact, but equivalent to:
+
+```c
+int initial_year;
+float percent_complete;
+
+initial_year = 2003;
+percent_complete = 89.5;
+```
+
+## Interger Types
+
+C has five kinds of integers: `char`, `short`, `int`, `long`/`long int`, `long long`/`long long int`
+
+| Type               | Bits | Bytes | Range                                       |
+| ------------------ | ---- | ----- | ------------------------------------------- |
+| char               | 8    | 1     | -128 to 127                                 |
+| unsigned char      | 8    | 1     | 0 to 255                                    |
+| short              | 16   | 2     | -32767 to 32767                             |
+| unsigned short     | 16   | 2     | 0 to 65535                                  |
+| int                | 16   | 2     | -32767 to 32767                             |
+| unsigned int       | 16   | 2     | 0 to 65535                                  |
+| long               | 32   | 4     | -2147483647 to 2147483647                   |
+| unsigned long      | 32   | 4     | 0 to 4294967295                             |
+| long long          | 64   | 8     | -9223372036854775807 to 9223372036854775807 |
+| unsigned long long | 64   | 8     | 0 to 18446744073709551615                   |
+
+## The `char` type
+
+The `char` type is used to store a single character. The integer value of a character corresponds to its ASCII value. For example, a value of 65 corresponds to the character `A` and 97 corresponds to `a`.
+
+```c
+char my_char = 'A';
+
+printf("%c\n", my_char); // prints A
+```
+
+## Floating Point Types
+
+A floating point number is a number with a decimal point.
+
+| Type        | Bytes | Possible values                                                  | Description                                                                  |
+| ----------- | ----- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| float       | 4     | $1\times10^{-38}$ to $1\times10^{38}$ &emsp;&emsp;&emsp;&emsp;   | A signle-precision floating point number with at least 6 significant digits  |
+| double      | 8     | $2\times10^{-308}$ to $1\times10^{308}$ &emsp;&emsp;&emsp;&emsp; | A double-precision floating point number with at least 10 significant digits |
+| long double | 8     | $2\times10^{-308}$ to $1\times10^{308}$ &emsp;&emsp;&emsp;&emsp; | Same as `double` on GNU systems, but may be 16 bytes on other systems        |
+
+## Cast Operator
+
+The cast operator is used to convert a value from one type to another. Its syntax is:
+
+```
+(type) variable
+```
+
+For example:
+
+```c
+int a = 5;
+float b = 13.5;
+float c = a + b; // c is 18.5
+int d;
+
+d = (int) c; // d is 18
+```
+
+## Storage Classes
+
+A concept called storage class determines the lifetime and scope of a variable. There are four storage classes in C:
+
+- `extern`
+- `static`
+- `typedef`
+- `auto`
+- `register`
+
+### External
+
+The extern storage class is used to give a reference of a global variable that is visible to ALL the program files. When you use `extern`, the variable cannot be initialized however, it points the variable name at a storage location that has been previously defined.
+
+When you have multiple files and you define a global variable or function, which will be used in other files also, then extern will be used in another file to give reference of defined variable or function.
+
+It is important to understand the difference between the declaration and definition of a variable. Declaring a variable means describing its type to the compiler but not allocating any space for it. Defining a variable means declaring it and also allocating space to hold the variable. Read more [above](/docs/c-mechanics/variables#declaration-vs-definition).
+
+For example:
+
+```c
+// main.c
+#include <stdio.h>
+
+int main() {
+  extern int my_var; // Declaration of the variable, cannot be initialized
+
+  printf("%d\n", my_var); // Prints 5
+
+  my_var = 10; // We can also assign (initialize) another value to the variable
+
+  printf("%d\n", my_var); // Prints 10
+
+  return 0;
+}
+
+// secondary.c
+int my_var = 5; // Definition of the variable
+```
+
+Notice that the external declaration of `my_var` in `main.c` does not allocate any space for the variable. It just tells the compiler that `my_var` is an integer variable. The definition of `my_var` in `secondary.c` allocates space for the variable.
+
+### Static
+
+The static storage class instructs the compiler to keep a local variable in existence during the life-time of the program instead of creating and destroying it each time it comes into and goes out of scope. Therefore, making local variables static allows them to maintain their values between function calls.
+
+```c
+int main(void) {
+  int i = 0;
+
+  while (i < 5) {
+    static int j = 0;
+    printf("%d\n", j);
+    j++;
+    i++;
+  }
+
+  return 0;
+}
+```
+
+### Typedef
+
+The typedef keyword allows the programmer to create new names for types. It is most often used with structures and unions. For example:
+
+```c
+typedef struct {
+  int age;
+  char *name;
+} person;
+
+int main(void) {
+  person p;
+  p.age = 20;
+  p.name = "John";
+
+  printf("%s is %d years old\n", p.name, p.age);
+
+  return 0;
+}
+```
+
+### `auto` and `register`
+
+These storage class specifiers are rarely used in modern C programs. The `auto` specifier is the default for local variables. The `register` specifier is used to tell the compiler to store the variable in a CPU register instead of RAM.

@@ -1,0 +1,97 @@
+---
+title: Functions
+description: Learn about functions in C.
+---
+
+# Functions
+
+A function is a block of code that can be called to perform a specific task. Functions are used to make code more modular and reusable. Functions can be called from other functions, or from the main program.
+
+They are written as follows:
+
+```c
+type function_name(type parameter1_name, type parameter2_name, ...) {
+  ...
+}
+```
+
+They follow the same [naming rules](/docs/c-mechanics/variables#a-word-on-naming-syntax-rules) as variables.
+
+## Function Example
+
+This function takes two integers and prints their sum:
+
+```c
+#include <stdio.h>
+
+void add(int a, int b) {
+  // We invoke printf() which is a function from the standard library
+  // that takes the arguments we pass to it and prints them to the console.
+  // The format string "%d\n" tells printf() to print the first argument.
+  printf("%d\n", a + b);
+}
+
+int main() {
+  add(1, 2); // Prints 3
+  add(3, 4); // Prints 7
+  add(5, 6); // Prints 11
+
+  // We invoke the exit() function from the standard library to exit the program.
+  // This is equivalent to returning 0 from main().
+  exit(0);
+}
+```
+
+## Function Return Values
+
+Functions can return a value to the caller. The return type is specified before the function name. If the function does not return a value, the return type is `void`. The function above did not return a value, so its return type was `void`.
+
+Here is an example of a function that returns the sum of two integers:
+
+```c
+#include <stdio.h>
+
+int add(int a, int b) {
+  return a + b;
+}
+
+int main() {
+  int sum = add(1, 2);
+  printf("%d\n", sum); // Prints 3
+
+  return 0;
+}
+```
+
+## Function Prototypes
+
+Function prototypes are used to tell the compiler about a function before it is defined. Function declarations at the top of a file are called prototypes:
+
+```c
+#include <stdio.h>
+
+// Function prototype
+int add(int a, int b);
+
+int main() {
+  int sum = add(1, 2);
+  printf("%d\n", sum); // Prints 3
+
+  return 0;
+}
+
+// Function definition
+int add(int a, int b) {
+  return a + b;
+}
+```
+
+You can also just declare and define the function at the same time like [above](/docs/c-mechanics/functions#function-return-values)
+
+Why do we need function prototypes? The compiler reads the file from top to bottom. If we call a function before it is defined, the compiler will not know what to do. We can fix this by defining the function before we call it, or by using a function prototype.
+
+In this way, we can declare prototypes in a header file and define the functions in a separate source file so those source files can call each other's functions without having to redefine their functions.
+
+## Return Code of Main
+
+The return code of `main()` is used to tell the operating system whether the program exited successfully or not. A return code of `0` means the program exited successfully. Any other return code means the program exited with an error.

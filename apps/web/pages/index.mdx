@@ -1,0 +1,42 @@
+---
+title: Data Structures
+description: No more looking blindly through homework, long labs, and vague study guides. This is your definitive, single source of truth for PASSING Data Structures.
+---
+
+import Image from "next/image";
+import { CTAButton } from "../components/CTAButton";
+import Link from "next/link";
+
+<div className="mt-8 flex items-center justify-center">
+  <Image
+    src="logo-light.svg"
+    alt="Data Structures Logo"
+    width={150}
+    height={150}
+    className="block dark:hidden"
+  />
+  <Image
+    src="logo-dark.svg"
+    alt="Data Structures Logo"
+    width={150}
+    height={150}
+    className="hidden dark:block"
+  />
+</div>
+
+{
+// wrapped with {} to mark it as javascript so mdx will not put it under a p tag
+}
+{<h1 className="text-center text-4xl tracking-tighter font-extrabold md:text-5xl mt-8">Data Structures</h1>}
+
+{<p className={`leading-snug text-center mt-4`}>No more looking blindly through homework, long labs, and vague study guides. <br className="hidden sm:block"/>This is your definitive, single source of truth for <span className="text-green-500 font-bold">PASSING</span> Data Structures.</p>}
+
+<div className="mt-8 flex w-full items-center justify-center px-6">
+  <div className="w-full sm:w-48">
+    <CTAButton>
+      <Link href="/docs/overview" className="block py-3">
+        Get Started
+      </Link>
+    </CTAButton>
+  </div>
+</div>

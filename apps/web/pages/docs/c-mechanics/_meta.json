@@ -1,0 +1,11 @@
+{
+  "variables": "Variables",
+  "functions": "Functions",
+  "arrays": "Arrays",
+  "strings": "Strings",
+  "malloc-and-free": "Malloc and Free",
+  "structs": "Structs",
+  "scopes": {
+    "display": "hidden"
+  }
+}
