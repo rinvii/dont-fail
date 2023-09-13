@@ -6,57 +6,163 @@
   filter: invert(1) brightness(1.8);
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 1) 200px
-    ),
-    fixed 0 0 / 20px 20px linear-gradient(135deg, #d1d1d1 2px, transparent 0),
-    fixed 0 0 / 20px 20px linear-gradient(225deg, #d1d1d1 2px, transparent 0),
-    fixed 0 0 / 20px 20px linear-gradient(315deg, #d1d1d1 2px, transparent 0),
-    fixed 0 0 / 20px 20px linear-gradient(45deg, #d1d1d1 2px, transparent 0),
-    fixed 10px 10px / 20px 20px
-      linear-gradient(135deg, #d1d1d1 2px, transparent 0),
-    fixed 10px 10px / 20px 20px
-      linear-gradient(225deg, #d1d1d1 2px, transparent 0),
-    fixed 10px 10px / 20px 20px
-      linear-gradient(315deg, #d1d1d1 2px, transparent 0),
-    fixed 10px 10px / 20px 20px
-      linear-gradient(45deg, #d1d1d1 2px, transparent 0);
+.bullet-right {
+  position: relative;
+  height: 1px;
+  width: 100%;
+  container-type: inline-size;
+
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 1px;
+    width: 30px;
+    top: 0;
+    left: -30px;
+    background: linear-gradient(to right, transparent 0, black 100%);
+    animation: shot-right 10s infinite;
+    animation-timing-function: linear;
+  }
+
+  &:nth-child(1) {
+    &::after {
+      animation-delay: 1s;
+    }
+  }
+
+  &:nth-child(2) {
+    &::after {
+      animation-delay: 3s;
+    }
+  }
+
+  &:nth-child(3) {
+    &::after {
+      animation-delay: 8s;
+    }
+  }
+
+  &:nth-child(4) {
+    &::after {
+      animation-delay: 5s;
+    }
+  }
+
+  &:nth-child(5) {
+    &::after {
+      animation-delay: 2s;
+    }
+  }
+
+  &:nth-child(6) {
+    &::after {
+      animation-delay: 7s;
+    }
+  }
+
+  &:nth-child(7) {
+    &::after {
+      animation-delay: 4s;
+    }
+  }
+
+  &:nth-child(8) {
+    &::after {
+      animation-delay: 9s;
+    }
+  }
 }
 
-.dark body {
-  background:
-    linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #111 200px),
-    fixed 0 0 / 20px 20px linear-gradient(135deg, #313131 2px, transparent 0),
-    fixed 0 0 / 20px 20px linear-gradient(225deg, #313131 2px, transparent 0),
-    fixed 0 0 / 20px 20px linear-gradient(315deg, #313131 2px, transparent 0),
-    fixed 0 0 / 20px 20px linear-gradient(45deg, #313131 2px, transparent 0),
-    fixed 10px 10px / 20px 20px
-      linear-gradient(135deg, #313131 2px, transparent 0),
-    fixed 10px 10px / 20px 20px
-      linear-gradient(225deg, #313131 2px, transparent 0),
-    fixed 10px 10px / 20px 20px
-      linear-gradient(315deg, #313131 2px, transparent 0),
-    fixed 10px 10px / 20px 20px
-      linear-gradient(45deg, #313131 2px, transparent 0);
+.bullet-down {
+  position: relative;
+  height: 100%;
+  width: 1px;
+  container-type: inline-size;
+
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 30px;
+    width: 1px;
+    top: -30px;
+    background: linear-gradient(to bottom, transparent 0, black 100%);
+    animation: shot-down 10s infinite;
+    animation-timing-function: linear;
+  }
+
+  &:nth-child(1) {
+    &::after {
+      animation-delay: 1s;
+    }
+  }
+
+  &:nth-child(2) {
+    &::after {
+      animation-delay: 3s;
+    }
+  }
+
+  &:nth-child(3) {
+    &::after {
+      animation-delay: 8s;
+    }
+  }
+
+  &:nth-child(4) {
+    &::after {
+      animation-delay: 5s;
+    }
+  }
+
+  &:nth-child(5) {
+    &::after {
+      animation-delay: 2s;
+    }
+  }
+
+  &:nth-child(6) {
+    &::after {
+      animation-delay: 7s;
+    }
+  }
+
+  &:nth-child(7) {
+    &::after {
+      animation-delay: 4s;
+    }
+  }
+
+  &:nth-child(8) {
+    &::after {
+      animation-delay: 9s;
+    }
+  }
 }
 
-/* .dark body {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #111 300px),
-    fixed 0 0 / 20px 20px radial-gradient(#313131 1px, transparent 0),
-    fixed 10px 10px / 20px 20px radial-gradient(#313131 1px, transparent 0);
-} */
+.dark .bullet-right::after {
+  background: linear-gradient(to right, transparent 0%, white 100%);
+}
 
-/* body {
-  background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 1) 300px
-    ),
-    fixed 0 0 / 20px 20px radial-gradient(#d1d1d1 1px, transparent 0),
-    fixed 10px 10px / 20px 20px radial-gradient(#d1d1d1 1px, transparent 0);
-} */
+.dark .bullet-down::after {
+  background: linear-gradient(to bottom, transparent 0%, white 100%);
+}
+
+@keyframes shot-right {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100cqw);
+  }
+}
+
+@keyframes shot-down {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100cqh);
+  }
+}

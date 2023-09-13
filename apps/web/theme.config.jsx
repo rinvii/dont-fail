@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useConfig } from "nextra-theme-docs";
+import { ThemeSwitch, useConfig } from "nextra-theme-docs";
 import LogoDark from "public/logo-dark.svg";
 import LogoLight from "public/logo-light.svg";
 
@@ -29,8 +29,11 @@ const config = {
       </>
     );
   },
+  sidebar: {
+    toggleButton: true,
+  },
   toc: {
-    float: true,
+    backToTop: true,
   },
   logo: (
     <>
@@ -40,7 +43,22 @@ const config = {
     </>
   ),
   footer: {
-    text: null,
+    component({ menu }) {
+      return (
+        <footer className="z">
+          <div className="pointer-events-none absolute top-0 h-12 w-full -translate-y-full bg-gradient-to-t from-[#FAFAFA] to-transparent dark:from-black"></div>
+          <div
+            className={`mx-auto max-w-[90rem] px-4 py-2 ${
+              menu ? "flex" : "hidden"
+            } gap-2`}
+          >
+            <ThemeSwitch />
+          </div>
+          <hr className="dark:nx-border-neutral-800" />
+          <div className="py-12"></div>
+        </footer>
+      );
+    },
   },
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
