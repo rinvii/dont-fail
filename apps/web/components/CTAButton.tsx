@@ -3,7 +3,7 @@ export function CTAButton({
   outline,
 }: {
   children: React.ReactNode;
-  outline: boolean;
+  outline?: boolean;
 }) {
   const outlineClasses =
     "border dark:border-neutral-400  dark:text-neutral-200 dark:hover:border-white dark:hover:text-white border-[#EAEAEA] text-neutral-800 hover:border-black hover:text-black";
