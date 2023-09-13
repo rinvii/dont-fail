@@ -47,6 +47,27 @@ For example, the diagram below shows an uninitialized double pointer that is abl
 
 ![Uninitialized double pointer](/uninitialized-double-pointer.jpg)
 
+<Callout>
+  Thus far, we have only declared pointer variables. This is bad practice
+  because uninitialized pointer variables contain garbage. From now on, we will
+  always initialize pointer variables. This requires that we include the
+  `stdlib.h` header file.
+</Callout>
+
+For example:
+
+```c
+#include <stdlib.h>
+
+int main() {
+  int *p = NULL;
+
+  return 0;
+}
+```
+
+Initializing a pointer variable to `NULL` is a good practice because it makes it clear that the pointer variable is not pointing to anything. `NULL` points to a special address that is guaranteed to not be used by the program.
+
 ## Address and Indirection Operators
 
 The _address operator_ `&` returns the address of a variable. For example, if `x` is a variable, then `&x` is the address of `x`. For this we say "address-of" in the context of getting a variable's address.
@@ -60,7 +81,7 @@ Let's initialize a pointer variable that points to nowhere in particular and an 
 Using the address operator, we can assign the address of `x` to `p`:
 
 ```c
-int *p;
+int *p = NULL;
 int x = 1;
 
 // assigning the address of x to p
@@ -199,7 +220,3 @@ int main() {
 ## Size of a Pointer
 
 The content of this section is not yet ready. Check back in a few days.
-
-```
-
-```
