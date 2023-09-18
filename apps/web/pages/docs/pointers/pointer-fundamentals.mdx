@@ -1,11 +1,11 @@
 ---
-title: Pointers
-description: Learn about pointers in C.
+title: Pointer Fundamentals
+description: Learn about the fundamentals of pointers in C.
 ---
 
 import { Callout } from "nextra/components";
 
-# Pointers
+# Pointer Fundamentals
 
 Before we learn about pointers, let's first learn about memory. Memory is divided into bytes with each byte capable of storing 8 bits. Each byte has a unique _address_. Addresses are just numbers that identify a byte. For example, the address of the first byte of memory is 0, the second byte is 1, the third byte is 2, and so on. Usually, the address is written in hexadecimal, so the first byte of memory is address 0x0, the second byte is 0x1, the third byte is 0x2, and so on.
 
@@ -29,6 +29,8 @@ To declare a pointer variable, we use the `*` operator. For example, to declare 
 int *p;
 ```
 
+{/* TODO: write a distinction between pointer variables and type: int p, *p; */}
+
 C requires that every pointer variable point only to a thing of a specific type. In the example above, `p` can only point to a thing of type `int`:
 
 ```c
@@ -46,6 +48,8 @@ int **p;    // points only to pointers that point to integers
 For example, the diagram below shows an uninitialized double pointer that is able to point to `pointer_variable1` and `pointer_variable2` as indicated by the dashed lines.
 
 ![Uninitialized double pointer](/uninitialized-double-pointer.jpg)
+
+{/* REVIEW: check if memory diagram is accurate */}
 
 <Callout>
   Thus far, we have only declared pointer variables. This is bad practice
@@ -139,6 +143,24 @@ int *p = &x; // IMPORTANT: here, * is part of the type specification
 int x = 5;
 int *p = &x;
 int y = *p;  // y will be assigned the value 5, which is the value stored at the address pointed to by p
+```
+
+<Callout>
+  Another way to put it is to understand that, as we know, a pointer variable
+  stores an address, but using the `*` operator can be thought of as creating an
+  alias to the data/value located at the address stored in the pointer variable.
+</Callout>
+
+For example:
+
+```c
+int y = 1;
+int x = 0;
+int *p = &x; // p points to x
+*p = 3;      // we create an alias to whatever p points to, which is x so this is the same as x = 3
+
+p = &y;      // p now points to y
+*p = *p + 1; // we create an alias to whatever p points to, which is y so this is the same as y = y + 1
 ```
 
 ### Incorrect Examples

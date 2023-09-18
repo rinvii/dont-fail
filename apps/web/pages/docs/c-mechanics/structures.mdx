@@ -1,0 +1,425 @@
+---
+title: Structures
+description: Learn about structures in C.
+---
+
+import { Callout } from "nextra-theme-docs";
+
+# Structures
+
+A **structure** is a collection of one or more variables grouped together under a single name. Each data item in a structure is called a **member**.
+
+The examples in this page will use the `char *` type. It is assumed that you are already familiar with [strings](/docs/c-mechanics/strings).
+
+## Declaring Structure Variables
+
+Let's declare and initialize a structure variable `person` with three members:
+
+```c
+int main() {
+    struct {
+        char *given_name;
+        char *family_name;
+        char *middle_name;
+        int age;
+    } person = {"John", "Doe", "Smith", 42};
+
+    return 0;
+}
+```
+
+The values in the curly braces are called **initializers**. They are used to initialize the members of the structure. The order of the initializers must match the order of the members in the structure.
+
+## Designated Initializers
+
+We can also use **designated initializers**, which are a feature of the C99 standard, to initialize the members of a structure. This allows us to specify the name of the member we want to initialize:
+
+```c
+int main() {
+    struct {
+        char *given_name;
+        char *family_name;
+        char *middle_name;
+        int age;
+    } person = {.given_name = "John", .family_name = "Doe", .middle_name = "Smith", .age = 42};
+
+    return 0;
+}
+```
+
+Although uncommon and unrecommended, we can also use designated initializers and regular initializers together:
+
+```c
+int main() {
+    struct {
+        char *given_name;
+        char *family_name;
+        char *middle_name;
+        int age;
+    } person = {.given_name = "John", "Doe", .middle_name = "Smith", 42};
+
+    return 0;
+}
+```
+
+<Callout type="warning">
+  The example above uses a regular initializers. The order of the initializers
+  must match the order of the members in the structure.
+</Callout>
+
+So, the following example is invalid when using designated initializers and regular initializers together:
+
+```c
+int main() {
+    struct {
+        char *given_name;
+        char *family_name;
+        char *middle_name;
+        int age;
+    } person = {.given_name = "John", .family_name = "Doe", 42, .middle_name = "Smith"}; // <-- error
+
+    return 0;
+}
+```
+
+This would read as "initialize the `given_name` member with `"John"`, the `family_name` member with `"Doe"`, the `middle_name` member with `42`, and the `age` member with `"Smith"`" which is wrong.
+
+## Structure Operations
+
+### Dot Operator
+
+We can access the members of a structure using the **dot operator**: `.`:
+
+```c
+#include <stdio.h>
+
+struct person {
+    char *given_name;
+    char *family_name;
+    char *middle_name;
+    int age;
+};
+
+int main() {
+    struct person john = {"John", "Doe", "Smith", 42};
+    struct person jane = {"Jane", "Doe", "Smith", 32};
+
+    printf("Given name: %s\n", john.given_name); // prints "John"
+    printf("Family name: %s\n", john.family_name); // prints "Doe"
+    printf("Middle name: %s\n", john.middle_name); // prints "Smith"
+    printf("Age: %d\n", john.age); // prints 42
+
+    return 0;
+}
+```
+
+### Arrow Operator
+
+This section assumes that you are already familiar with the [fundamentals of pointers](/docs/pointers/pointer-fundamentals).
+
+When working with pointers to structures, we can use the **arrow operator**: `->`. The arrow operator is a more convenient combination of the dereference operator `*` and the dot operator `.`:
+
+```c
+#include <stdio.h>
+
+struct person {
+    char *given_name;
+    char *family_name;
+    char *middle_name;
+    int age;
+};
+
+int main() {
+    struct person john = {"John", "Doe", "Smith", 42};
+    struct person jane = {"Jane", "Doe", "Smith", 32};
+    struct person *ptr_john = &john;
+    struct person *ptr_jane = &jane;
+
+    printf("Given name: %s\n", ptr_john->given_name); // prints "John"
+    printf("Family name: %s\n", ptr_john->family_name); // prints "Doe"
+    printf("Middle name: %s\n", ptr_john->middle_name); // prints "Smith"
+    printf("Age: %d\n", ptr_john->age); // prints 42
+
+    // we can also use the arrow operator with the dot operator, but it's not recommended
+
+    printf("Given name: %s\n", (*ptr_john).given_name); // prints "John"
+    printf("Family name: %s\n", (*ptr_john).family_name); // prints "Doe"
+    printf("Middle name: %s\n", (*ptr_john).middle_name); // prints "Smith"
+    printf("Age: %d\n", (*ptr_john).age); // prints 42
+
+    return 0;
+}
+```
+
+## Structure Types
+
+We know how to declare and initialize a structure variable, but we don't really want to do that every time we want to create a new structure variable of the same type:
+
+```c
+struct {
+    char *given_name;
+    char *family_name;
+    char *middle_name;
+    int age;
+} john = {.given_name = "John", .family_name = "Doe", .middle_name = "Smith", 42};
+
+struct {
+    char *given_name;
+    char *family_name;
+    char *middle_name;
+    int age;
+} jane = {.given_name = "Jane", .family_name = "Doe", .middle_name = "Smith", 32};
+```
+
+This is not very convenient. Instead, we can define a **structure type** and use it to declare new structure variables. C provides two ways to define a structure type
+
+### Structure Tag
+
+We can define a structure type using a **structure tag**:
+
+```c
+#include <stdio.h>
+
+struct person {
+    char *given_name;
+    char *family_name;
+    char *middle_name;
+    int age;
+}; // <-- don't forget the semicolon, if you do, you'll get cryptic error messages
+
+/* The structure tag is `person`. We can now use it to declare new structure variables. */
+
+int main() {
+    struct person john = {.given_name = "John", .family_name = "Doe", 42, .middle_name = "Smith"};
+    struct person jane = {.given_name = "Jane", .family_name = "Doe", 32, .middle_name = "Smith"};
+
+    return 0;
+}
+```
+
+The next section shows an alternative way to define a structure type, but before we do that, let's argue for why we should use structure tags.
+
+Structure tags are not only useful because they allow us to define a structure type to prevent repeated structure definitions, but also because they allow us to define a structure type with a member type that is a pointer to the structure type itself through [nested structures](/docs/c-mechanics/structures#nested-structures-arrays-of-structures):
+
+```c
+struct node {
+    int value;
+    struct node *next;
+};
+```
+
+### `typedef`
+
+An alternative to structure tags is declaring a type using `typedef` keyword to define a type name:
+
+```c
+typedef struct {
+    char *given_name;
+    char *family_name;
+    char *middle_name;
+    int age;
+} Person;
+
+/* this is equivalent to below
+
+typedef struct Person {
+    char *given_name;
+    char *family_name;
+    char *middle_name;
+    int age;
+} Person;
+
+*/
+
+int main() {
+    Person john = {.given_name = "John", .family_name = "Doe", 42, .middle_name = "Smith"};
+    Person jane = {.given_name = "Jane", .family_name = "Doe", 32, .middle_name = "Smith"};
+
+    return 0;
+}
+```
+
+<Callout type="info">
+  Note that in the `typedef` example above, we've used an anonymous structure,
+  and then immediately provided the `typedef` name `Person` to it. This is
+  equivalent to defining a `struct` with a name and then giving it a `typedef`,
+  as shown in the commented section.
+</Callout>
+
+The previous section showed how to define a structure type with a member type that is a pointer to the structure type itself. We can do the same with `typedef`:
+
+```c
+typedef struct node node;
+
+struct node {
+    int value;
+    node *next;
+};
+```
+
+<Callout>
+  So what is the difference between using a structure tag and `typedef` when
+  creating a self-referential structure type? Nothing besides convenience. Both
+  are valid and functional. Ultimately, the choice comes down to coding style.
+</Callout>
+
+## Structures as Arguments and Return Values
+
+We can pass structures as arguments to functions:
+
+```c
+#include <stdio.h>
+
+struct person {
+    char *given_name;
+    char *family_name;
+    char *middle_name;
+    int age;
+};
+
+void print_person(struct person p) {
+    printf("%s %s %s, %d\n", p.given_name, p.middle_name, p.family_name, p.age);
+}
+
+int main() {
+    struct person john = {.given_name = "John", .family_name = "Doe", 42, .middle_name = "Smith"};
+    struct person jane = {.given_name = "Jane", .family_name = "Doe", 32, .middle_name = "Smith"};
+
+    print_person(john); // prints "John Smith Doe, 42"
+    print_person(jane); // prints "Jane Smith Doe, 32"
+
+    return 0;
+}
+```
+
+We can also return structures from functions. We will use `typedef` as well:
+
+```c
+#include <stdio.h>
+
+typedef struct {
+    char *given_name;
+    char *family_name;
+    char *middle_name;
+    int age;
+} Person;
+
+Person create_person(char *given_name, char *family_name, char *middle_name, int age) {
+    Person new_person = {.given_name = given_name, .family_name = family_name, .middle_name = middle_name, .age = age};
+
+    return new_person;
+}
+
+int main() {
+    Person john = create_person("John", "Doe", "Smith", 42);
+    Person jane = create_person("Jane", "Doe", "Smith", 32);
+
+    printf("John: %s %s %s, %d\n", john.given_name, john.middle_name, john.family_name, john.age);
+    printf("Jane: %s %s %s, %d\n", jane.given_name, jane.middle_name, jane.family_name, jane.age);
+
+    return 0;
+}
+```
+
+## Nested Structures, Arrays of Structures
+
+Structures can be nested. For example, we can create a structure `name` and use it as a member of another structure `person`. This is useful when we want to group related data together in a structure:
+
+```c
+#include <stdio.h>
+
+struct name {
+    char *given_name;
+    char *family_name;
+    char *middle_name;
+};
+
+struct person {
+    struct name name; // <-- nested structure
+    int age;
+};
+
+int main() {
+    struct person john = {.name = {.given_name = "John", .family_name = "Doe", .middle_name = "Smith"}, .age = 42};
+    struct person jane = {.name = {.given_name = "Jane", .family_name = "Doe", .middle_name = "Smith"}, .age = 32};
+
+    printf("John: %s %s %s, %d\n", john.name.given_name, john.name.middle_name, john.name.family_name, john.age);
+    printf("Jane: %s %s %s, %d\n", jane.name.given_name, jane.name.middle_name, jane.name.family_name, jane.age);
+
+    return 0;
+}
+```
+
+We can also create arrays of structures:
+
+```c
+#include <stdio.h>
+
+struct name {
+    char *given_name;
+    char *family_name;
+    char *middle_name;
+};
+
+struct person {
+    struct name name;
+    int age;
+};
+
+int main() {
+    struct person people[3] = {
+        {.name = {.given_name = "John", .family_name = "Doe", .middle_name = "Smith"}, .age = 42},
+        {.name = {.given_name = "Jane", .family_name = "Doe", .middle_name = "Smith"}, .age = 32},
+    };
+
+    printf("John: %s %s %s, %d\n", people[0].name.given_name, people[0].name.middle_name, people[0].name.family_name, people[0].age);
+    printf("Jane: %s %s %s, %d\n", people[1].name.given_name, people[1].name.middle_name, people[1].name.family_name, people[1].age);
+
+    people[0].age = 43;
+
+    printf("John's age: %d", people[0].age); // prints "John's age: 43"
+
+    people[2] = {.name = {.given_name = "Jack", .family_name = "Doe", .middle_name = "Smith"}, .age = 22};
+
+    printf("Jack: %s %s %s, %d\n", people[2].name.given_name, people[2].name.middle_name, people[2].name.family_name, people[2].age);
+
+    return 0;
+}
+```
+
+## Pointers to Structures
+
+Pointers to structures are such a significant topic that we can introduce them before diving into the topic of [pointers](/docs/pointers/pointer-fundamentals). Using pointers with structures becomes especially relevant when we want to dynamically allocate memory for structures, pass structures to functions efficiently, or manipulate linked structures like linked lists.
+
+One of the primary reasons you'd want to use pointers with structures is to allocate memory for them dynamically. This ensures efficient use of memory, especially when the exact amount of memory required isn't known in advance.
+
+In the following example, we'll dynamically allocate memory for a structure using the `malloc()` function. We'll also use the arrow operator to access the members of the structure:
+
+```c
+#include <stdio.h>
+
+struct person {
+    char *given_name;
+    char *family_name;
+    char *middle_name;
+    int age;
+};
+
+int main() {
+    struct person *new_person = (struct person *) malloc(sizeof(struct person));
+
+    if (new_person != NULL) {
+        new_person->given_name = "Jane";
+        new_person->family_name = "Doe";
+    }
+
+    printf("Given name: %s\n", new_person->given_name); // prints "Jane"
+    printf("Family name: %s\n", new_person->family_name); // prints "Doe"
+
+    free(new_person);
+
+    return 0;
+}
+```
+
+{/* TODO: add memory diagram for structure declaration */}

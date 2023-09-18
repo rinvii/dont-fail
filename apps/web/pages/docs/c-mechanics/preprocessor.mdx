@@ -1,0 +1,205 @@
+---
+title: Preprocessor
+description: Learn about the preprocessor in C.
+---
+
+import { Callout } from "nextra-theme-docs";
+
+# Preprocessor
+
+The preprocessor is a program that edits C programs prior to compilation. It uses preprocessing directives which are commands that begin with a `#` character. For example, the `#include` directive is used to include header files in a C program. This directive tells the preprocessor to include the contents of the specified header file in the program.
+
+## Preprocessing Directives
+
+Preprocessing directives fall into three categories:
+
+- Macro definition. `#define` is used to define macros. `#undef` is used to undefine macros.
+- File inclusion. `#include` causes the contents of a specified file to be included in the program.
+- Conditional compilation. `#if`, `#ifdef`, `#ifndef`, `#elif`, `#else` and `#endif` are used to conditionally compile parts of a program.
+
+## Macro Definitions
+
+We'll look at macro definitions first. A macro is a name that represents a sequence of characters. When the preprocessor encounters a macro name in a program, it replaces the name with the sequence of characters that the macro represents. This process is called macro expansion.
+
+### Simple Macros
+
+**Simple macros** are defined using the `#define` directive. The syntax is:
+
+```c
+#define name replacement
+```
+
+The `name` is the name of the macro and the `replacement` is the sequence of characters that the macro represents. For example, the following macro defines the name `PI` to represent the value `3.14159`:
+
+```c
+#define PI 3.14159
+#define PRINT printf("Hello, world!\n")
+```
+
+<Callout>
+  Notice the lack of a semicolon at the end of the `PRINT` macro. In C, macros
+  defined using the `#define` preprocessor directive do not require a semicolon
+  at the end. In fact, if you put a semicolon at the end of a macro definition,
+  the macro will include that semicolon when it's expanded, which might not be
+  what you want.
+</Callout>
+
+When the preprocessor encounters the name `PI` in a program, it replaces it with the value `3.14159`. Consider the following program:
+
+```c {3-4,7-8}
+#include <stdio.h>
+
+#define PI 3.14159
+#define PRINT printf("Hello, world!\n")
+
+int main(void) {
+    printf("PI = %f\n", PI);
+    PRINT;
+
+    return 0;
+}
+```
+
+The preprocessor replaces the name `PI` with the value `3.14159` before the program is compiled. The compiler sees the following program:
+
+```c {4-5}
+#include <stdio.h>
+
+int main(void) {
+    printf("PI = %f\n", 3.14159);
+    printf("Hello, world!\n");
+    return 0;
+}
+```
+
+### Parameterized Macros
+
+Parameterized macros are **function-like macros**. The syntax is:
+
+```c
+#define name(parameters) replacement
+```
+
+<Callout type="warning">
+  There must be no whitespace between a parameterized macro name and the left
+  parenthesis.
+</Callout>
+
+The `name` is the name of the macro and the `replacement` is the sequence of characters that the macro represents. The `parameters` are the parameters of the macro. For example, the following macro defines the name `MAX` to represent the maximum of two values:
+
+```c
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+```
+
+When the preprocessor encounters the name `MAX` in a program, it replaces it with the sequence of characters `((a) > (b) ? (a) : (b))`. Consider the following program:
+
+```c {3,6}
+#include <stdio.h>
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+int main(void) {
+    printf("MAX(3, 5) = %d\n", MAX(3, 5)); // prints MAX(3, 5) = 5
+    return 0;
+}
+```
+
+### `#` Operator
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `##` Operator
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### General Properties of Macros
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### Parantheses in Macro Definitions
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### Creating Longer Macros
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### Predefined Macros
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### Empty Macro Arguments
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### Macros with Variable Number of Arguments
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `__func__` Identifier
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## Conditional Compilation
+
+### `#if` and `#endif` Directives
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `defined` Operator
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `#ifdef` and `#ifndef` Directives
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `#elif` and `#else` Directives
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## Miscalleanous Directives
+
+### `#error` Directive
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `#pragma` Directive
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `_Pragma` Operator
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
