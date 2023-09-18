@@ -1,11 +1,277 @@
 ---
 title: Arrays
+description: Learn about arrays in C.
 ---
 
 import { Callout } from "nextra-theme-docs";
 
 # Arrays
 
-<Callout type="warning">
-  The content of this page is not yet ready. Check back in a few days.
+An array is a data structure that contains a number of data values of the same type.
+
+## One-Dimensional Arrays
+
+This kind of array has just one dimension where its elements are stored in a linear fashion. The following is an example of a one-dimensional array `numbers` that contains 5 elements of type `int`:
+
+```c
+int numbers[5];
+```
+
+Right now, the elements in `numbers` have empty values, but it's important to understand that the array is already allocated in memory **on the stack**.
+
+The following diagram shows the memory layout of the array. The array is allocated in memory as a contiguous block of memory. Each element is stored in a memory locations adjacent to each other. The memory location of the first element is the same as the memory location of the array itself. Since we know that an `int` occupies 4 bytes of memory, we can see this in the diagram where element 1 occupies the addresses 0x2000 to 0x2003, element 2 occupies the addresses 0x2004 to 0x2007, and so on.
+
+![Memory layout of the array](/array-numbers-memory-diagram.jpg)
+
+{/* REVIEW: check if array memory diagram is accurate */}
+
+<Callout type="info">
+  Note that although element 1 occupies the addresses 0x2000 to 0x2003, the
+  address of element 1 is located at 0x2000. And, the address of the array is
+  also located at 0x2000. This is because the address of an array is the address
+  of its first element.
 </Callout>
+
+## Array Indexing
+
+To access an element in an array, we use the array name followed by the index of the element in square brackets. For example, to access the first element in the array `numbers` and assign it the value 10, we can do the following:
+
+```c
+numbers[0] = 10;
+```
+
+Remember, since each element in the array `numbers` is of type `int`, we can assign an `int` value to it. We can also access the value of an element in the array. For example, to print the value of the first element in the array, we can do the following:
+
+```c
+printf("%d", numbers[0]);
+```
+
+### Common Mistakes
+
+C doesn't perform any bounds checking when accessing an element in an array. This means that if we try to access an element that is outside the bounds of the array, the program will still compile and run, but the behavior is undefined. This means that the program may crash, or it may not. It may also produce unexpected results. For example, the following code will compile and run, but it will produce unexpected results:
+
+```c
+int numbers[5];  // allocate an array of 5 elements
+
+numbers[5] = 10; // index 5 is trying to access the 6th element in the array, but we only allocated 5 elements
+```
+
+Another common mistake is when using for loops. The example below will iterate over the array 6 times instead of 5, which will cause the program to crash:
+
+```c {3}
+int numbers[5]; // allocate an array of 5 elements
+
+for (int i = 0; i <= 5; i++) { // <-- note the mistake here: i <= 5 leads to 6 iterations
+  numbers[i] = 10; // on the 6th iteration, we are trying to access the 6th element in the array, but we only allocated 5 elements
+}
+```
+
+## Array Initialization
+
+We can declare an array with an **initializer**. For example, the following code declares an array `numbers` and initializes it with the values 10, 20, 30, 40, and 50:
+
+```c
+int numbers[5] = {10, 20, 30, 40, 50};
+```
+
+We can also initialize an array with fewer values than the number of elements in the array. For example, the following code declares an array `numbers` and initializes it with the values 10, 20, and 30. The remaining elements in the array will be initialized with the value 0:
+
+```c
+int numbers[5] = {10, 20, 30}; // same as int numbers[5] = {10, 20, 30, 0, 0};
+```
+
+Using the feature above, we can initialize an array to all zeros:
+
+```c
+int numbers[5] = {0}; // same as int numbers[5] = {0, 0, 0, 0, 0};
+```
+
+If an initializer is present, the length of the array can be omitted. Instead, the compiler will infer the length of the array from the number of elements in the initializer:
+
+```c
+int numbers[] = {10, 20, 30, 40, 50}; // same as int numbers[5] = {10, 20, 30, 40, 50};
+```
+
+### Designated Initializers
+
+Designated initializers allow us to initialize specific elements in an array. For example, the following code initializes the only first element in the array `numbers` to 10, and the third element to 30. The remaining elements will be initialized with the value 0:
+
+```c
+int numbers[5] = {[0] = 10, [2] = 30}; // same as int numbers[5] = {10, 0, 30, 0, 0};
+```
+
+Each number in the square brackets is called a **designator**. The designators must be integer constant expressions. If the array that is being initialized has length `n`, then the designators must be in the range `0` to `n - 1`.
+
+If the length of the array is omitted and a designated initializer is present, the compiler will infer the length of the array from the highest designator:
+
+```c
+int numbers[] = {[9] = 30}; // same as int numbers[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 30};
+```
+
+## Using `sizeof` Operator with Arrays
+
+The `sizeof` operator can be used to determine the size of an array. Since an integer occupies 4 bytes of memory, and suppose we are declaring an array of 5 integers, then the size of the array will be 20 bytes. If we use `sizeof` on the array, it will return 20. We can then divide this number by the size of the first element in order to get the number of elements in the array: $\frac{20}{4} = 5$.
+
+```c {6}
+#include <stdio.h>
+
+int main() {
+  int numbers[5] = {10, 20, 30, 40, 50};
+
+  for (int i = 0; i < (int) (sizeof(numbers) / sizeof(numbers[0])); i++) {
+    printf("%d\n", numbers[i]);
+  }
+
+  return 0;
+}
+```
+
+<Callout type="info">
+  Notice that we are casting `sizeof(numbers) / sizeof(numbers[0])` to an `int`
+  since we are comparing it to `i` which is an `int`: `i < (int) (sizeof(numbers) / sizeof(numbers[0]))`.
+</Callout>
+
+## Multidimensional Arrays
+
+{/* TODO: add information about row-major order */}
+
+{/* TODO: maybe add C online compiler https://onecompiler.com/ */}
+
+A multidimensional array is an array of arrays. For example, the following code declares a two-dimensional array (matrix) `numbers` that contains 3 rows and 4 columns. Both rows and columns are indexed starting from 0:
+
+```c
+int numbers[3][4];
+```
+
+We can visualize this array as a table with 3 rows and 4 columns whose indices are shown at the sides
+
+![Multidimensional array](/2d-array-example-diagram.jpg)
+
+<Callout>
+  It's important to remember that accessing multidimensional arrays involves
+  using the row index first followed by the column index. For example, to access
+  the element at row 1 and column 2, we use the following: `numbers[1][2]`.
+</Callout>
+
+### Multidimensional Array Initialization
+
+We can create an initializer for a multidimensional array by nesting one-dimensional initializers. We will also step through each element in the matrix using nested for loops and print their value:
+
+```c
+#include <stdio.h>
+
+int main() {
+    int numbers[3][4] = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 0, 1, 2}};
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 4; j++) {
+            printf("%d ", numbers[i][j]);
+        }
+        printf("\n");
+    }
+
+    /* prints out
+
+    1 2 3 4
+    5 6 7 8
+    9 0 1 2
+
+    */
+
+    return 0;
+}
+```
+
+Alternatively, we can initialize arrays with for loops:
+
+```c {6-10}
+#include <stdio.h>
+
+int main() {
+    int numbers[3][4];
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 4; j++) {
+            numbers[i][j] = 5;
+        }
+    }
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 4; j++) {
+            printf("%d ", numbers[i][j]);
+        }
+        printf("\n");
+    }
+
+    /* prints out
+
+    5 5 5 5
+    5 5 5 5
+    5 5 5 5
+
+    */
+
+    return 0;
+}
+```
+
+## Variable-Length Arrays (C99)
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## Array Decay
+
+In C, arrays and pointers are closely related. While they are not the same, in many contexts, the name of an array can be used as if it's a pointer to its first element. This phenomenon is often referred to as **array decay** because the array _decays_ to a pointer when it's used in certain situations, like when passed to a function.
+
+Consider the following example:
+
+```c {14}
+#include <stdio.h>
+
+void display(int *arr, int length) {
+    for(int i = 0; i < length; i++) {
+        printf("%d ", arr[i]);
+    }
+
+    printf("\n");
+}
+
+int main() {
+    int numbers[5] = {10, 20, 30, 40, 50};
+
+    display(numbers, 5);  // Here, 'numbers' decays to a pointer to its first element.
+
+    return 0;
+}
+```
+
+In the above code, we are passing the array `numbers` to the function `display`. However, the function `display` expects a pointer to an integer as its first argument. So, how is it possible that we are passing an array to the function? This is because the array `numbers` decays to a pointer to its first element when it's passed to the function `display`. This means that the following function calls are equivalent:
+
+```c
+display(numbers, 5);     // we are passing an array which decays to a pointer to its first element
+display(&numbers[0], 5); // we are passing a pointer to the first element in the array
+display(&numbers, 5);    // we are passing a pointer to the array itself, which is just a pointer to the first element in the array
+```
+
+### Arrays and Pointers are Different
+
+Although they often seem to act in similar ways, it's important to understand that arrays and pointers are fundamentally different. A few distinctions:
+
+- Arrays have their own memory allocated on the stack, while pointers are just variables that store memory addresses.
+
+- Arrays cannot be reassigned to point to a different memory location, while pointers can be reassigned to point to a different memory location.
+
+- The `sizeof` operator when used on an array returns the total size (in bytes) of the array. For a pointer, `sizeof` returns the size of the pointer variable itself (which is typically 4 bytes on a 32-bit system and 8 bytes on a 64-bit system), not the size of the data it points to. Read more about [size of pointers](/docs/pointers/pointer-fundamentals#size-of-a-pointer).
+
+  For example, the following code will print the size of the array `numbers` and the size of the pointer `p`:
+
+  ```c
+  int numbers[5];
+  int *p = numbers;
+  printf("%zu\n", sizeof(numbers)); // might print 20 (for an int size of 4 bytes)
+  printf("%zu\n", sizeof(p));      // might print 8 (on a 64-bit system)
+  ```
+
+- An array has a fixed size meaning there's a limit to the number of elements it can hold. When using a pointer to access blocks of memory, especially dynamically allocated ones, there are no inherent bounds. This flexibility can be powerful but also dangerous, as it introduces the potential for out-of-bounds access, which can lead to undefined behavior.

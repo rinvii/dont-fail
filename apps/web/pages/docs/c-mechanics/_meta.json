@@ -1,10 +1,13 @@
 {
   "variables": "Variables",
+  "control-flow": "Control Flow",
   "functions": "Functions",
   "arrays": "Arrays",
   "strings": "Strings",
-  "malloc-and-free": "Malloc and Free",
-  "structs": "Structs",
+  "preprocessor": "Preprocessor",
+  "structures": "Structures",
+  "unions": "Unions",
+  "enumerations": "Enumerations",
   "scopes": {
     "display": "hidden"
   }

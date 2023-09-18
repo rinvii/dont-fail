@@ -1,0 +1,281 @@
+---
+title: Control Flow
+description: Learn about control flow in C.
+---
+
+import { Callout, Steps } from "nextra-theme-docs";
+
+# Control Flow
+
+Control flow is the idea that we can control the flow of our program. We can make decisions and execute different code depending on the result of those decisions. In C, there are three categories of statements that fall under this idea, depending on how they affect the order in which statements are executed:
+
+- **Selection statements**. `if` and `switch` statements allow us to execute different code depending on the result of a condition.
+- **Iteration statements**. `while`, `do`, and `for` statements allow us to execute the same code multiple times.
+- **Jump statements**. `break`, `continue`, `return`, and `goto` statements allow us to change the order in which statements are executed.
+
+## Selection Statements
+
+### `if` Statement
+
+The `if` statement allows a program to choose between two alternatives by testing the value of an expression.
+
+```
+if (expression) {
+    statement
+}
+```
+
+If the expression is true, the statement is executed. If the expression is false, the statement is skipped.
+
+#### `else` Clause
+
+An `else` clause can be added to an `if` statement to provide an alternative statement to execute if the expression is false.
+
+```
+if (expression) {
+    statement
+} else {
+    statement
+}
+```
+
+### Cascaded `if` Statements
+
+Multiple `if` statements can be chained together to provide multiple alternatives.
+
+```
+if (expression) {
+    statement
+} else if (expression) {
+    statement
+} else {
+    statement
+}
+```
+
+### Conditional Expressions
+
+The conditional operator, or **ternary operator**, is a special operator that allows us to write a conditional expression in a single line.
+
+```
+expr1 ? expr2 : expr3
+```
+
+It reads as follows: if `expr1` is true, then the value of the expression is `expr2`; otherwise, the value of the expression is `expr3`.
+
+Here's how we could use it to find the maximum of two numbers:
+
+```c
+int max = (a > b) ? a : b;
+```
+
+### `switch` Statement
+
+Suppose we had the following cascaded `if` statements:
+
+```c
+if (x == 1) {
+    printf("one");
+} else if (x == 2) {
+    printf("two");
+} else if (x == 3) {
+    printf("three");
+} else {
+    printf("other");
+}
+```
+
+An alternative to this is the `switch` statement:
+
+```c
+switch (x) {
+    case 1:
+        printf("one");
+        break;
+    case 2:
+        printf("two");
+        break;
+    case 3:
+        printf("three");
+        break;
+    default:
+        printf("other");
+        break;
+}
+```
+
+The `switch` statement is a multiway branch statement. It tests the value of an expression against a list of integer constants, and branches to the first matching case. If no case matches, the default case is executed.
+
+It has the form:
+
+```
+switch (expression) {
+    case constant:
+        statement
+        break;
+    case constant:
+        statement
+        break;
+    default:
+        statement
+        break;
+}
+```
+
+We can alter the flow of control by using the `break` statement. When a `break` statement is encountered, the `switch` statement is terminated and execution continues with the statement following the `switch` statement.
+
+For example, the code below will keep falling through until it reaches a `break` statement:
+
+```c
+switch (x) {
+    case 1:
+        printf("one");
+    case 2:
+        printf("two");
+    case 3:
+        printf("three");
+    default:
+        printf("other");
+}
+```
+
+If `x` is 1, the output will be:
+
+```
+one
+two
+three
+other
+```
+
+If `x` is 2, the output will be:
+
+```
+two
+three
+other
+```
+
+<Callout type="warning">
+  Forgetting to include a `break` statement is a common mistake when using
+  `switch` statements. Although, omitting `break` is sometimes intentional to
+  allow several cases to share code, it's usually just an oversight.
+</Callout>
+
+## Iteration Statements
+
+### `while` Statement
+
+The `while` statement allows us to execute a statement repeatedly while a condition is true.
+
+```
+while (expression) {
+    statement
+}
+```
+
+The expression is evaluated before each iteration. If it's true, the statement is executed. If it's false, the loop terminates.
+
+### `do` Statement
+
+The `do` statement is similar to the `while` statement, except that the expression is evaluated after each iteration.
+
+```
+do {
+    statement
+} while (expression);
+```
+
+Basically, do something and then check if you should do it again. This means that the statement will always be executed at least once.
+
+### `for` Statement
+
+The `for` statement allows us to execute a statement repeatedly while a condition is true, but it also allows us to initialize and update a variable.
+
+```
+for (expr1; expr2; expr3) {
+    statement
+}
+```
+
+Consider the example below:
+
+```c
+for (int i = 0; i < 10; i++) {
+    printf("%d\n", i);
+}
+```
+
+The code above will print the numbers 0 through 9. It reads as follows: initialize `i` to 0; if `i` is less than 10, print `i` and increment `i` by 1.
+
+#### Comma Operator
+
+Sometimes we want to initialize and update more than one variable in a `for` statement. We can do this by using the comma operator.
+
+```c
+for (int i = 0, j = 0; i < 10; i++, j++) {
+    printf("%d %d\n", i, j);
+}
+```
+
+The code above will print the numbers 0 through 9 twice. It reads as follows: initialize `i` and `j` to 0; if `i` is less than 10, print `i` and `j`, and increment `i` and `j` by 1.
+
+## Jump Statements
+
+### `break` Statement
+
+Occasionally, we want to exit a loop before the expression evaluates to false. We can do this by using the `break` statement.
+
+For example, suppose we wanted to print the numbers 0 through 9, but stop when we reach 5:
+
+```c
+for (int i = 0; i < 10; i++) {
+    if (i == 5) {
+        break;
+    }
+    printf("%d\n", i);
+}
+```
+
+The code above will print the numbers 0 through 4.
+
+### `continue` Statement
+
+Sometimes we want to skip the rest of the statements in a loop and skip to the next iteration. We can do this by using the `continue` statement.
+
+Using the same example as above, suppose we wanted to print the numbers 0 through 9, but skip 5:
+
+```c
+for (int i = 0; i < 10; i++) {
+    if (i == 5) {
+        continue;
+    }
+    printf("%d\n", i);
+}
+```
+
+The code above will print the numbers 0 through 9, except for 5.
+
+### `return` Statement
+
+The `return` statement allows us to exit a function and return a value. It changes the flow of control by returning to the caller.
+
+For example, suppose we wanted to write a function that returns the sum of two numbers, but only if both numbers are positive:
+
+```c
+int sum(int a, int b) {
+    if (a < 0 || b < 0) {
+        return 0;
+    }
+
+    return a + b;
+}
+```
+
+The code above will return `0` if either `a` or `b` is negative. Otherwise, it will return the sum of `a` and `b`. The early `return` skips the rest of the function and transfers control flow back to the caller effectively skipping the rest of the function.
+
+### `goto` Statement
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>

@@ -1,0 +1,249 @@
+---
+title: Dynamic Storage Allocation
+description: Learn how to dynamically allocate memory in C!
+---
+
+import { Callout, Tabs } from "nextra-theme-docs";
+
+# Dynamic Storage Allocation
+
+In C, data structures are normally fixed in size. That is to say, they are allocated on the **stack**. This means that the compiler knows exactly how much memory to allocate for each variable, and it is allocated when the program is **compiled**. However, sometimes we want to allocate memory at **runtime**, and we don't know how much memory we need until the program is running. This is called **dynamic storage allocation**.
+
+{/* TODO: add section on difference between runtime and compile time */}
+
+## Memory Allocation functions
+
+C provides three functions for dynamic memory allocation which needs to be included using the `stdlib.h` header file:
+
+- `malloc()`. Allocates a block of memory of the given size in bytes. It returns a pointer to the first byte of the allocated memory. If the memory cannot be allocated, it returns `NULL`.
+- `calloc()`. Allocates a block of memory of the given size in bytes and initializes all its bits to zero. It returns a pointer to the first byte of the allocated memory. If the memory cannot be allocated, it returns `NULL`.
+- `realloc()`. Resizes a previously allocated block of memory. It returns a pointer to the first byte of the allocated memory. If the memory cannot be allocated, it returns `NULL`.
+
+All three functions return a **generic pointer** of type `void *`. This means that the pointer can be cast to any other pointer type. For example, if we want to allocate memory for an array of `int`s, we can do the following:
+
+```c /(int *)/
+int *array = (int *)malloc(10 * sizeof(int));
+```
+
+## Null Pointers
+
+All the memory allocation functions obtain memory blocks from a storage pool called the **heap**. The heap is a large pool of memory that is shared by the entire program. The heap is managed by the operating system, and the program can request memory from the heap and return it to the heap when it is no longer needed.
+
+Sometimes, the memory allocation functions cannot obtain memory from the heap. This can happen if the heap is full, or if the program does not have permission to access the heap.
+
+In this case, instead of returning a **generic pointer** the memory allocation functions return a **null pointer**.
+
+A null pointer is a pointer that does not point to any valid memory address. It's represented by the `NULL` macro, which is defined in the `stdlib.h` header file. It's also defined in five other header files: `locale.h`, `stddef.h`, `stdio.h`, `string.h`, and `time.h`.
+
+<Callout type="warning">
+  Since the memory allocation functions _may return a null pointer_, it's
+  important to check the return value of these functions before using the
+  pointer. Performing operations on a null pointer is undefined behavior causing
+  crashes and other unexpected behavior.
+</Callout>
+
+Consider the following example which allocates memory for an array of 10 integers and checks if the memory was allocated successfully:
+
+```c {7-10}
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+  int *array = (int *)malloc(10 * sizeof(int));
+
+  if (array == NULL) {
+    printf("Error: Could not allocate memory\n");
+    exit(1);
+  }
+
+  free(array);
+  array = NULL;
+}
+```
+
+<Callout>
+  Always check if the memory allocation functions return a generic pointer or a
+  null pointer before using the pointer.
+</Callout>
+
+## Using `malloc`
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## Using `calloc`
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## Using `realloc`
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+{/* TODO: add memory leak examples for realloc here or the section below? */}
+
+## Deallocating Storage
+
+When we are done using the memory allocated by the memory allocation functions, we need to return the memory to the heap. This is done using the `free()` function. The `free()` function takes a pointer to the first byte of the memory block to be freed. It does not return anything.
+
+Suppose we did not free the memory allocated in the previous example. This is called a **memory leak**. The memory block will remain allocated until the program terminates, and we will not be able to use it. This is a waste of memory.
+
+For example, we allocate memory for an array of 10 integers, but we did not free the memory:
+
+```c
+#include <stdlib.h>
+#include <stdio.h>
+
+int main() {
+  int *array = (int *)malloc(10 * sizeof(int));
+
+  if (array == NULL) {
+    printf("Error: Could not allocate memory\n");
+    exit(1);
+  }
+
+  return 0;
+}
+```
+
+<Callout type="warning">
+  When you allocate memory using the memory allocation functions, you must
+  always free the memory when you are done using it. Otherwise, you will have a
+  memory leak.
+</Callout>
+
+Memory leaks can also occur if you lose the pointer to the allocated memory. For example, consider the following examples in each tab:
+
+<Tabs items={["Losing Pointer 1", "Losing Pointer 2", "Losing Pointer 3"]}>
+  <Tabs.Tab>
+    In this example, we allocate memory for an array of 10 integers, but we
+    assign the pointer to `NULL` before freeing the memory:
+  
+    ```c
+    #include <stdlib.h>
+    #include <stdio.h>
+
+    int main() {
+      int *array = (int *)malloc(10 * sizeof(int));
+
+      if (array == NULL) {
+        printf("Error: Could not allocate memory\n");
+        exit(1);
+      }
+
+      array = NULL; // we lost the pointer to the allocated memory
+
+      free(array);
+      array = NULL;
+
+      return 0;
+    }
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    In this example, we allocate memory for an array of 10 integers, but we
+    assign the pointer to a different memory address before freeing the memory:
+  
+    ```c
+    #include <stdlib.h>
+    #include <stdio.h>
+
+    int main() {
+      int *array = (int *)malloc(10 * sizeof(int));
+      int *other = (int *)malloc(10 * sizeof(int));
+
+      if (array == NULL || other == NULL) {
+        printf("Error: Could not allocate memory\n");
+        exit(1);
+      }
+
+      array = other; // we lost the pointer to what `array` was pointing to
+
+      free(array);
+      free(other);
+      array = NULL;
+      other = NULL;
+
+      return 0;
+    }
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    In this example, we allocate memory for an array of 10 integers. Then, without freeing the original memory, we allocate another block of memory for an array of 20 integers and assign the pointer to this new block:
+
+    ```c
+    #include <stdlib.h>
+    #include <stdio.h>
+
+    int main() {
+      int *array = (int *)malloc(10 * sizeof(int));
+
+      if (array == NULL) {
+        printf("Error: Could not allocate memory\n");
+        exit(1);
+      }
+
+      // Without freeing the original memory, we allocate more memory
+      array = (int *)malloc(20 * sizeof(int));
+
+      if (array == NULL) {
+        printf("Error: Could not allocate memory\n");
+        exit(1);
+      }
+
+      free(array);  // Only frees the second block of memory. The first block is leaked.
+      array = NULL;
+
+      return 0;
+    }
+    ```
+
+  </Tabs.Tab>
+</Tabs>
+
+<Callout type="warning">
+  When you lose the pointer to the allocated memory, you will not be able to
+  free the memory. This will cause a memory leak.
+</Callout>
+
+## Dangling Pointers
+
+In the previous examples, we explicitly assigned the pointer to `NULL` after freeing the memory. But why?
+
+We do this to prevent **dangling pointers** which are pointers that points to memory that has already been freed.
+
+If we forgot to assign the pointer to `NULL` after freeing the memory, but still tried to use the pointer, we would be accessing memory that has already been freed. This is undefined behavior and can cause crashes and other unexpected behavior.
+
+Consider the following example:
+
+```c
+#include <stdlib.h>
+#include <stdio.h>
+
+int main() {
+  int *array = (int *)malloc(10 * sizeof(int));
+
+  if (array == NULL) {
+    printf("Error: Could not allocate memory\n");
+    exit(1);
+  }
+
+  free(array);
+
+  // Accessing memory that has already been freed
+  array[0] = 1;
+
+  return 0;
+}
+```
+
+<Callout>
+  Always assign the pointer to `NULL` after freeing the memory to prevent
+  dangling pointers.
+</Callout>

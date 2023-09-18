@@ -2,10 +2,194 @@
 title: Strings
 ---
 
-import { Callout } from "nextra-theme-docs";
+import { Callout, Bleed } from "nextra-theme-docs";
 
 # Strings
 
+We know how to create a character using the `char` keyword. But what if we want to create a word? Or a sentence? Or a paragraph? Or a book? Or a library? Or a whole universe?
+
+In C, there are no special types for these things. Instead, we use arrays of characters to represent them. These arrays are called **strings**.
+
+This page will discuss the fundamentals of strings in C and the C string library. If you're looking for string applications in the context of user and/or file-based interaction, check out the [Input and Output](/docs/input-and-output) page.
+
+This page also covers pointers. You can learn more about the fundamentals of pointers [here](/docs/pointers/pointer-fundamentals) before you continue. It's not required, but it will help you understand the content on this page.
+
+## String Literals
+
+A **string literal** is a sequence of characters enclosed in **double quotes** (`"`). For example, `"Hello, world!"` is a string literal.
+
 <Callout type="warning">
-  The content of this page is not yet ready. Check back in a few days.
+  String literals must be enclosed in double quotes. Single quotes are used to
+  denote a single character.
+</Callout>
+
+If a string literal is too long to fit on one line, **you can continue it to the next line** by using the `\` character at the end of each line. For example:
+
+```c
+"This is a very long string \
+that spans multiple lines."
+```
+
+This technique is useful for making your code more readable, but has one drawback: it may conflict with the indentation.
+
+```c
+if (condition) {
+  "This is a very long string \
+   that spans multiple lines."
+}
+```
+
+Notice that we aligned the second line with the first line, but in doing so, we introduced extra whitespace into the string in its entirety:
+
+The example above is equivalent to:
+
+```c
+if (condition) {
+  "This is a very long string    that spans multiple lines."
+}
+```
+
+<Callout type="warning">
+  Using the `\` technique for string literals must require the string to
+  continue at the beginning of the line.
+</Callout>
+
+If this indentation issue is a problem for you, you can join create string literals that are adjacent to each other. For example:
+
+```c
+if (condition) {
+  "This is a very long string "
+  "that spans multiple lines."
+  // same as "This is a very long string that spans multiple lines."
+}
+```
+
+The compiler will automatically join adjacent string literals into one string literal.
+
+### Underlying Memory of String Literals
+
+When we supply a string literal to arguments like `printf(Hello, world!)`, what are we actually passing to the function? To understand this, we need to understand how string literals are stored in memory.
+
+<Callout>
+  In C, a string literal is just an array of characters of size `n + 1`. The
+  extra character is the **null character** represented by the escape sequence
+  `\0`.
+</Callout>
+
+So what happens whenever we create a string literal? Let's take a look at the following code:
+
+```c
+int main() {
+  "Hello, world!";
+  // Realistically, this isn't very useful. If compiled with optimization
+  // flags, this code will not allocate any memory.
+  return 0;
+}
+```
+
+When the program reaches the string literal, it will allocate `n + 1` bytes into a **read-only section of memory**. `n` is the number of characters, but since strings are null-terminated, we need to allocate an extra byte for the null character.
+
+The diagram below shows the memory layout of the string literal `"Hello, world!"`:
+
+<Bleed>
+  ![Memory Layout of String Literal](/string-literal-memory-diagram.jpg)
+</Bleed>
+
+So now that we know how string literals work, we can understand how they are passed to functions. When we pass a string literal to a function, we are actually passing an **address to the string** which is a pointer to the first character. For example:
+
+```c
+int main() {
+  printf("Hello, world!");
+  // The string literal "Hello, world!" is passed to printf as a pointer to
+  // the first character of the string which is 'H'.
+  return 0;
+}
+```
+
+### String Literal Operations
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## String Variables
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+{/* We know how to create a string literal, but what if we want to create a **string variable**? In the [Arrays](/docs/c-mechanics/arrays) page, we learned how to create an arrays of integers. In this section, we'll learn how to create arrays of characters. For example: */}
+
+## Accessing Characters in a String
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## C String Library
+
+### `strcpy` (String Copy)
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `strncpy` (String Copy with Length)
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `strlen` (String Length)
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `strcat` (String Concatenation)
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `strncat` (String Concatenation with Length)
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `strcmp` (String Comparison)
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `strncmp` (String Comparison with Length)
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `strstr` (String Search)
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `atof` (ASCII to Float)
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `atoi` (ASCII to Integer)
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+### `atol` (ASCII to Long)
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
 </Callout>

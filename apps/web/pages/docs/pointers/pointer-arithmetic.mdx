@@ -1,0 +1,123 @@
+---
+title: Pointer Arithmetic
+description: Learn about pointer arithmetic in C.
+---
+
+import { Callout } from "nextra-theme-docs";
+
+# Pointer Arithmetic
+
+In [Pointer Fundamentals](/docs/pointers/pointer-fundamentals), we learned that pointers are variables that store memory addresses. In [Arrays](/docs/c-mechanics/arrays), we learned that arrays contain a sequence of elements of the same type. As it turns out, pointers can point to those array elements. We will go more in-depth on this topic in the next page: [Pointers and Arrays](/docs/pointers/pointers-and-arrays).
+
+<Callout>Pointers can point to array elements.</Callout>
+
+For example, consider the following array and pointer:
+
+```c
+int numbers[5];
+int *p = numbers; // p points to the first element of numbers, same as int *p = &numbers[0];
+// after
+p = &numbers[2];  // p now points to the third element of numbers
+```
+
+The diagram below shows what we did in the memory:
+
+![Pointer Arithmetic Introduction Diagram](/pointer-arithmetic-introduction-diagram.jpg)
+
+{/* REVIEW: check if pointer arithmetic diagram is accurate */}
+{/* TODO: add pointer arithmetic diagrams */}
+
+<Callout type="info">
+  Each memory address is 4 bytes apart from each other. This is because each
+  `int` is 4 bytes in size. The other bytes are omitted for simplicity.
+</Callout>
+
+Pointing and assigning to different element memory addresses alone is not very useful. What is useful is the ability to perform arithmetic on pointers. This is called **pointer arithmetic**.
+
+In C, there are **only three** forms of pointer arithmetic: adding an integer to a pointer, subtracting an integer from a pointer, and subtracting one pointer from another. Let's look at each of these in detail.
+
+## Adding an Integer to Pointer
+
+We can add an integer to a pointer to move the pointer.
+
+For example:
+
+```c {3}
+int numbers[5];
+int *p = numbers;
+p = p + 2; // p now points to the third element of numbers
+```
+
+Be cautious when performing arithmetic on a pointer because it is possible to go out of bounds of the array. For example, if we add 5 to `p`, it will point to the sixth element of `numbers`, which is out of bounds. This is undefined behavior.
+
+<Callout type="warning">
+  Performing arithmetic on a pointer can cause undefined behavior if the pointer
+  goes out of bounds of the array.
+</Callout>
+
+## Subtracting an Integer from a Pointer
+
+Subtracting is simple:
+
+```c {4}
+int numbers[5];
+int *p = &numbers[4]; // p points to the last element of numbers
+int *q = &numbers[2]; // q points to the third element of numbers
+p = p - 2;            // p now points to the third element of numbers
+```
+
+The example above has both `p` and `q` pointing to the third element of `numbers`.
+
+## Subtracting One Pointer from Another
+
+When subtracting pointers from each other, the result is the distance between the two pointers in terms of the number of elements. For example:
+
+```c {4,5}
+int numbers[5];
+int *p = &numbers[4];          // p points to the last element of numbers
+int *q = &numbers[2];          // q points to the third element of numbers
+int distance = p - q;          // distance is 2
+int negative_distance = q - p; // negative_distance is -2
+```
+
+## Comparing Pointers
+
+We can compare pointers using relational operators (`<`, `<=`, `>`, `>=`) and equality operators (`==`, `!=`). The outcome of the comparison depends on the relative positions of the pointers in memory. For example:
+
+```c {6, 10, 14, 18, 22, 26}
+int numbers[5];
+int *p = &numbers[4]; // p points to the last element of numbers
+int *q = &numbers[2]; // q points to the third element of numbers
+
+if (p > q) {
+  printf("p is greater than q\n");             // this will be printed
+}
+
+if (p < q) {
+  printf("p is less than q\n");                // this will NOT be printed
+}
+
+if (p >= q) {
+  printf("p is greater than or equal to q\n"); // this will be printed
+}
+
+if (p <= q) {
+  printf("p is less than or equal to q\n");    // this will NOT be printed
+}
+
+if (p == q) {
+  printf("p is equal to q\n");                 // this will NOT be printed
+}
+
+if (p != q) {
+  printf("p is not equal to q\n");             // this will be printed
+}
+```
+
+Remember, pointers are just memory addresses. When comparing pointers, we are comparing the memory addresses.
+
+## Pointers to Compound Literals
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>

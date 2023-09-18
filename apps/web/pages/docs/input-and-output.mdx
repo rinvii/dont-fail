@@ -1,0 +1,326 @@
+---
+title: Input and Output
+description: Learn how to do input and output with streams in C.
+---
+
+import { Callout } from "nextra-theme-docs";
+
+# Input and Output
+
+The term **stream** refers to any source of input or any destination for output. All streams are **file pointers** of type `FILE *`. The standard library provides three predefined streams:
+
+| File Pointer | Stream          | Description |
+| ------------ | --------------- | ----------- |
+| `stdin`      | Standard input  | Keyboard    |
+| `stdout`     | Standard output | Screen      |
+| `stderr`     | Standard error  | Screen      |
+
+<Callout type="info">
+  Note that the File Pointer column are just variable names reserved by C.
+</Callout>
+
+## I/O Redirection
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## Textfiles vs Binary Files
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+## Formatted I/O
+
+Formatted I/O is the process of reading and writing data in **format strings**. Format strings are strings that may contain one or both: ordinary characters and **conversion specifications**. Ordinary characters are copied to the output stream as is. Conversion specifications are replaced by a value of the specified conversion.
+
+### `printf` Family of Functions
+
+`printf` and `fprintf` are the two most commonly used functions for formatted output which can be included using the `stdio.h` header file: `#include <stdio.h>{:c}`. `printf` writes to the `stdout` (standard output), while `fprintf` writes to a specified stream.
+
+<Callout>
+  The `stdio.h` header file is the standard input/output header file. It
+  contains all the functions and macros for input and output that are mentioned
+  in this page. Remember to include it at the top of your program.
+</Callout>
+
+`printf` is just a wrapper function for `fprintf` that writes to `stdout`.
+
+The following two lines are equivalent:
+
+```c
+printf("Hello, world!\n");
+fprintf(stdout, "Hello, world!\n");
+```
+
+`printf` and `fprintf` have the following prototype:
+
+```c
+int printf(const char * restrict format, ...);
+int fprintf(FILE * restrict stream, const char * restrict format, ...);
+```
+
+The elipses indicate that the functions can take any number of arguments. The first argument is a format string, and the remaining arguments are values to be converted.
+
+For example:
+
+```c
+printf("Hello, %s!\n", "world");
+fprintf(stdout, "Hello, %s!\n", "world");
+```
+
+Both functions return the number of characters written to the stream, or a negative value if an error occurs.
+
+#### `printf` Family Conversion Specifications
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+#### `printf` Examples
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+### `scanf` Family of Functions
+
+`scanf` and `fscanf` read from `stdin` and a specified stream respectively. Just like `printf` and `fprintf`, `scanf` is just a wrapper function for `fscanf` that reads from `stdin`.
+
+They have the following prototype:
+
+```c
+int scanf(const char *restrict format, ...);
+int fscanf(FILE *restrict stream, const char *restrict format, ...);
+```
+
+They return the number of input items successfully matched and assigned, or `EOF` if an error occurs before any conversion.
+
+`EOF` is a macro defined in `stdio.h` that expands to an integer constant expression with a negative value. It's used to indicate the end of a file.
+
+#### `scanf` Family Conversion Specifications
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+#### `scanf` Examples
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+## Single Character I/O
+
+### Input Functions
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+### Output Functions
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+## Line I/O
+
+### Input Functions
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+### Output Functions
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+## Block I/O
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+## File Operations
+
+In C, files are represented by a pointer of type `FILE *`.
+
+### Opening Files
+
+To open a file, we use the `fopen` function. It has the following prototype:
+
+```c
+FILE *fopen(const char *restrict filename, const char *restrict mode);
+```
+
+`fopen` returns a file pointer (a stream) to the opened file, or `NULL` if an error occurs.
+
+For example, to open a file named `hello.txt` in the current directory for reading:
+
+```c
+#include <stdio.h>
+
+int main(void) {
+  FILE *fp = fopen("hello.txt", "r");
+
+  if (fp == NULL) {
+    return 1;
+  }
+
+
+
+  fclose(fp);
+  fp = NULL;
+
+  return 0;
+}
+```
+
+Notice that we check if `fp` is `NULL` before using it. This is because `fopen` returns `NULL` if an error occurs.
+
+<Callout type="warning">
+  Always check if `fopen` returns `NULL` before using the file pointer.
+</Callout>
+
+### Modes
+
+The second argument to `fopen` is a string that specifies the mode in which the file is opened.
+
+The following table lists the possible modes for text files:
+
+| String | Description                                            |
+| ------ | ------------------------------------------------------ |
+| `"r"`  | Open for reading                                       |
+| `"w"`  | Open for writing (file need not exist)                 |
+| `"a"`  | Open for appending (file need not exist)               |
+| `"r+"` | Open for reading and writing, starting at beginning    |
+| `"w+"` | Open for reading and writing (truncate if file exists) |
+| `"a+"` | Open for reading and appending (file need not exist)   |
+
+The following table lists the possible modes for binary files:
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+### Closing Files
+
+To close a file, we use the `fclose` function. It has the following prototype:
+
+```c
+int fclose(FILE *stream);
+```
+
+`fclose` returns `0` if the file is successfully closed, or `EOF` if an error occurs.
+
+Closing files takes in a file pointer associated with an open file and ensures any buffered data is written out, system resources are freed, and the association between the file and file pointer is terminated.
+
+Although the example [above](/docs/input-and-output#opening-files) closes the file, it can be improved to be more safe. For example:
+
+```c
+#include <stdio.h>
+
+int main(void) {
+  FILE *fp = fopen("hello.txt", "r");
+
+  if (fp == NULL) {
+    return 1;
+  }
+  // ...
+
+  if (fclose(fp) == EOF) {
+    return 1;
+  }
+  fp = NULL;
+
+  return 0;
+}
+```
+
+### Attaching Files to Open Streams
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+### Getting File Names from the Command Line
+
+We can open and close files, but how do we supply the file name to `fopen`? One way is to hardcode the file name in the program, but this is not very flexible. A better way is to get the file name from the command line.
+
+To obtain file names from the command line, we use the arguments passed to the `main` function. The `main` function has the following prototype:
+
+```c
+int main(int argc, char *argv[]);
+// or
+int main(int argc, char **argv);
+```
+
+- `argc` is the number of arguments passed to the program.
+- `argv` is an array of strings containing the arguments passed to the program.
+
+The first argument, `argv[0]`, is the name of the program being executed. The remaining arguments are the arguments passed to the program. Therefore, the actual arguments passed to the program begin from `argv[1]`.
+
+For example, if we run the following command:
+
+```bash
+./program hello.txt
+```
+
+`argc` will be `2` and `argv` will be:
+
+```c filename="program.c"
+#include <stdio.h>
+
+int main(int argc, char *argv[]) {
+  if (argc != 2) {
+      fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+      return 1;
+    }
+
+  printf("argc: %d\n", argc);       // prints argc: 2
+  printf("argv[0]: %s\n", argv[0]); // prints argv[0]: ./program
+  printf("argv[1]: %s\n", argv[1]); // prints argv[1]: hello.txt
+
+  const char *filename = argv[1];
+  FILE *fp = fopen(filename, "r");
+
+  if (fp == NULL) {
+      perror("Error opening file"); // prints to stderr
+      return 1;
+  }
+
+  // ... Perform operations on the file
+
+  fclose(fp);
+
+  return 0;
+}
+```
+
+### Temporary Files
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+### File Buffering
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+## File Positioning
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>
+
+## String I/O
+
+<Callout type="warning">
+  The content of this page is not yet ready. Check back in a few days.
+</Callout>

@@ -1,17 +1,13 @@
 ---
 title: String I/O
-description: Learn how to read and write strings from/to standard input/output.
+description: Learn how to read and write from/to standard input/output in C.
 ---
 
 import { Callout } from "nextra-theme-docs";
 
 # String I/O
 
-In this section, we will learn how to read and write strings from/to standard input/output. In the next section, we will learn how to read and write strings from/to files.
-
-We will describe series of ways to read strings from standard input (streams) including modern functions and deprecated functions.
-
-It's generally recommended to use modern functions, but you may need to use deprecated functions in some cases.
+In this section, we will learn how to read and write strings from/to standard input/output.
 
 ## String Input
 
@@ -29,7 +25,7 @@ The function reads a line from the stream `stream` and stores it into the buffer
 
 The function returns the number of characters read, including the newline character, but not including the terminating null character. If the end-of-file is encountered while attempting to read a character, the `EOF` value is returned. Otherwise, the value -1 is returned if an error occurs.
 
-Notice the double pointer of the first parameter. How come we store the address of the buffer in a double pointer? Why does the function store things in the buffer pointed to by `*lineptr` instead of `lineptr`, `**lineptr` or `&lineptr`? We will dive in this topic in the [Pointers](/docs/pointers) section.
+Notice the double pointer of the first parameter. How come we store the address of the buffer in a double pointer? Why does the function store things in the buffer pointed to by `*lineptr` instead of `lineptr`, `**lineptr` or `&lineptr`? We will dive into this topic in the [Pointers](/docs/pointers/pointer-fundamentals) section.
 
 For now, we can understand this by saying that the function is asking for a pointer to a pointer to a character. This is to say, the function is asking for a pointer to a buffer of characters. In other words, the function is asking for a pointer to a string which means the function is asking for the memory address of a string. So the reason why the first parameter is a double pointer is so that the function can adjust what memory address the string (of a buffer of characters) is pointing to.
 
@@ -154,7 +150,15 @@ int main(void) {
 
 ### `scanf`
 
-The `scanf` function is considered unsafe and should only be used in very specific cases. It's the same as `sscanf` except that it reads from standard input:
+The `scanf` function is considered unsafe and should only be used in very specific cases.
+
+It has the following prototype:
+
+```c
+scanf(const char *restrict format, ...);;
+```
+
+It's the same as `sscanf` except that it reads from standard input:
 
 ```c
 #include <stdio.h>

@@ -1,6 +1,10 @@
 {
   "overview": "Overview",
   "c-mechanics": "C Mechanics",
-  "io": "Input and Output",
-  "pointers": "Pointers"
+  "input-and-output": "Input and Output",
+  "io": {
+    "display": "hidden"
+  },
+  "pointers": "Pointers",
+  "stack-versus-heap": "Stack versus Heap"
 }

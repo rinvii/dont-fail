@@ -154,7 +154,8 @@
     transform: translateX(-100%);
   }
   100% {
-    transform: translateX(100cqw);
+    /* transform: translateX((100cqw)); */
+    transform: translateX(calc(100cqw + 30px));
   }
 }
 
@@ -163,6 +164,8 @@
     transform: translateY(-100%);
   }
   100% {
-    transform: translateY(100cqh);
+    transform: translateY(calc(100cqh + 30px));
   }
 }
+
+/* TODO: CSS nesting not configured */
