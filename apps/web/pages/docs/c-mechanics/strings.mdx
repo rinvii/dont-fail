@@ -14,6 +14,8 @@ This page will discuss the fundamentals of strings in C and the C string library
 
 This page also covers pointers. You can learn more about the fundamentals of pointers [here](/docs/pointers/pointer-fundamentals) before you continue. It's not required, but it will help you understand the content on this page.
 
+In this page, we differentiate strings from characters by using **double quotes** (`"`) for strings and **single quotes** (`'`) for characters.
+
 ## String Literals
 
 A **string literal** is a sequence of characters enclosed in **double quotes** (`"`). For example, `"Hello, world!"` is a string literal.
@@ -34,8 +36,8 @@ This technique is useful for making your code more readable, but has one drawbac
 
 ```c
 if (condition) {
-  "This is a very long string \
-   that spans multiple lines."
+    "This is a very long string \
+    that spans multiple lines."
 }
 ```
 
@@ -45,7 +47,7 @@ The example above is equivalent to:
 
 ```c
 if (condition) {
-  "This is a very long string    that spans multiple lines."
+    "This is a very long string    that spans multiple lines."
 }
 ```
 
@@ -58,17 +60,24 @@ If this indentation issue is a problem for you, you can join create string liter
 
 ```c
 if (condition) {
-  "This is a very long string "
-  "that spans multiple lines."
-  // same as "This is a very long string that spans multiple lines."
+    "This is a very long string "
+    "that spans multiple lines."
+    // same as "This is a very long string that spans multiple lines."
 }
 ```
 
 The compiler will automatically join adjacent string literals into one string literal.
 
+For example, the compiler will accept this:
+
+```c
+printf("Hello, \n"
+       "world!"); // same as printf("Hello, \nworld!");
+```
+
 ### Underlying Memory of String Literals
 
-When we supply a string literal to arguments like `printf(Hello, world!)`, what are we actually passing to the function? To understand this, we need to understand how string literals are stored in memory.
+When we supply a string literal to arguments like `printf("Hello, world!)`, what are we actually passing to the function? To understand this, we need to understand how string literals are stored in memory.
 
 <Callout>
   In C, a string literal is just an array of characters of size `n + 1`. The
@@ -80,10 +89,10 @@ So what happens whenever we create a string literal? Let's take a look at the fo
 
 ```c
 int main() {
-  "Hello, world!";
-  // Realistically, this isn't very useful. If compiled with optimization
-  // flags, this code will not allocate any memory.
-  return 0;
+    "Hello, world!";
+    // Realistically, this isn't very useful. If compiled with optimization
+    // flags, this code will not allocate any memory.
+    return 0;
 }
 ```
 
@@ -99,97 +108,384 @@ So now that we know how string literals work, we can understand how they are pas
 
 ```c
 int main() {
-  printf("Hello, world!");
-  // The string literal "Hello, world!" is passed to printf as a pointer to
-  // the first character of the string which is 'H'.
-  return 0;
+    printf("Hello, world!");
+    // The string literal "Hello, world!" is passed to printf as a pointer to
+    // the first character of the string which is 'H'.
+    return 0;
 }
 ```
 
-### String Literal Operations
+## String Variables (Arrays of Characters)
+
+We know how to create a string literal, but what if we want to create a **string variable**? In the [Arrays](/docs/c-mechanics/arrays) page, we learned how to create an arrays of integers. Here we find out solidify our understanding that strings are just arrays of characters.
+
+In this section, we'll learn how to create arrays of characters. For example:
+
+```c
+char my_string[6]; // allocate an array of 6 characters
+```
+
+We can initialize the array with a string literal:
+
+```c
+char my_string[6] = ['H', 'e', 'l', 'l', 'o', '\0'];
+```
 
 <Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
+  Noitice that we need to include the null character at the end of the array.
+  Which is why we need to allocate an array of size `n + 1` to store a word of
+  size `n`. In this case, we need to allocate an array of size 6 to store a word
+  of size 5.
 </Callout>
 
-## String Variables
+We can also initialize the array with a string literal:
+
+```c
+char my_string[6] = "Hello";
+
+// even better, let the compiler figure out the size of the string literal
+
+char my_string[] = "Hello";
+```
+
+The code above shows a string literal `"Hello"` **being copied** into the array `my_string`. The null character is also copied into the array.
+
+Note that the array `my_string` is **not** a string literal. It is an array of characters that contains a copy of the string literal `"Hello"`.
+
+These strings are called **mutable strings** because we can change the contents of the array. For example:
+
+```c
+char my_string[] = "Hello";
+my_string[0] = 'h'; // change the first character to 'h'
+
+printf("%s", my_string); // prints "hello"
+```
+
+### Mutability of Strings
+
+Just now we learned that we can change the contents of a string variable which is an array of characters. But what about string literals?
+
+<Callout>
+  String literals are stored in a read-only section of memory and are therefore
+  immutable. Therefore, we cannot change the contents of a string literal.
+</Callout>
+
+For example, these two strings are not the same:
+
+```c
+char my_string[] = "Hello";
+char *my_string = "Hello";
+```
+
+The first string copies the string literal `"Hello"` into the array `my_string`. The second string creates a pointer `my_string` that points to the string literal `"Hello"`. Learn more about pointers [here](/docs/pointers/pointer-fundamentals).
+
+## C String Library Functions
+
+The C string library is a collection of functions that operate on strings. These functions are declared in the header file `string.h`. To use these functions, we need to include the header file:
+
+```c
+#include <string.h>
+```
+
+### String Manipulation
+
+#### `strcpy` (String Copy)
+
+Copies the contents of one string (including the null terminator) to another and returns the destination string.
+
+```c
+char *strcpy(char *dest, const char *src);
+```
+
+`strcpy` accepts two arguments: `dest` and `src`. `dest` is the destination string and `src` is the source string, and returns the destination string.
+
+```c
+char src[] = "Hello";
+char dest[sizeof(src)]; // sizeof returns the size of the array in bytes: 6
+
+strcpy(dest, src);
+printf("%s", dest); // prints "Hello"
+```
+
+#### `strncpy` (String Copy with Length)
+
+Copies the contents of one string (including the null terminator) to another with a specified length and returns the destination string.
+
+```c
+char *strncpy(char *dest, const char *src, size_t n);
+```
+
+`strncpy` accepts three arguments: `dest`, `src`, and `n`.
+
+`dest` is the destination string, `src` is the source string, and `n` is the number of characters to copy.
+
+```c
+char dest[] = "_____ World";
+char src[] = "Hello";
+
+strncpy(dest, src, strlen(src)); // strlen(src) returns 5
+
+printf("%s", dest); // prints "Hello World"
+```
+
+#### `strcat` (String Concatenation)
+
+Concatenates the contents of one string to another and returns the destination string.
+
+<Callout type="error">
+  `strcat` behavior is undefined if the destination is not large for both source
+  and destination strings. If either source or destination string is not
+  null-terminated.
+</Callout>
+
+```c
+char *strcat(char *dest, const char *src);
+```
+
+`strcat` accepts two arguments: `dest` and `src`. `dest` is the destination string and `src` is the source string.
+
+```c
+char str1[10] = "Hi ";
+// same as char str1[] = {'H', 'i', ' ', '\0'}; rest of the array is '\0'
+char str2[] = "Hello";
+
+strcat(str1, str2);
+
+printf("%s", str1); // prints  "Hi Hello"
+```
+
+#### `strncat` (String Concatenation with Length)
+
+Concatenates the contents of one string to another with a specified length and returns the destination string.
+
+<Callout type="error">
+  `strncat` behavior is undefined if the destination is not large for both
+  source and destination strings. If either source or destination string is not
+  null-terminated.
+</Callout>
+
+```c
+char *strncat(char *dest, const char *src, size_t n);
+```
+
+`strncat` accepts three arguments: `dest`, `src`, and `n`.
+
+`dest` is the destination string, `src` is the source string, and `n` is the number of characters to concatenate.
+
+```c
+char str1[10] = "Hi ";
+char str2[] = "Heyllo";
+
+strncat(str1, str2, 3);
+
+printf("%s", str1); // prints  "Hi Hey"
+```
+
+#### `strdup` (String Duplicate)
+
+Duplicates a string and returns a pointer to the new string. The new string is allocated using `malloc` and must be freed using `free` to avoid a memory leak.
+
+```c
+char *strdup(const char *s);
+```
+
+`strdup` accepts one argument: `s`. `s` is the string to duplicate.
+
+```c
+char *str = "Hello";
+char *dup = strdup(str);
+
+printf("%s", dup); // prints "Hello"
+
+free(dup); // free the memory allocated by strdup
+```
+
+#### `strndup` (String Duplicate with Length)
+
+Duplicates a string with a specified length and returns a pointer to the new string. The new string is allocated using `malloc` and must be freed using `free` to avoid a memory leak.
+
+```c
+char *strndup(const char *s, size_t n);
+```
+
+`strndup` accepts two arguments: `s` and `n`. `s` is the string to duplicate and `n` is the number of characters to duplicate.
+
+```c
+char *str = "Heyllo";
+char *dup = strndup(str, 3);
+
+printf("%s", dup); // prints "Hey"
+
+free(dup); // free the memory allocated by strndup
+```
+
+### String Inspection
+
+#### `strlen` (String Length)
+
+Returns the length of a string excluding the null terminator.
+
+```c
+size_t strlen(const char *s);
+```
+
+`strlen` accepts one argument: `s`. `s` is the string to inspect.
+
+```c
+char *str = "Hello";
+
+printf("%zu", strlen(str)); // prints 5, %zu is the format specifier for size_t
+```
+
+#### `strcmp` (String Comparison)
+
+Compares two strings lexicographically and returns an integer that indicates the relationship between the strings.
+
+```c
+int strcmp(const char *lhs, const char *rhs);
+```
+
+`strcmp` accepts two arguments: `lhs` and `rhs`. They are pointers to null-terminated strings to compare.
+
+`strcmp` returns an integer that indicates the relationship between the strings:
+
+- `0` if the strings are equal
+- `< 0` if `lhs` is less than `rhs`
+- `> 0` if `lhs` is greater than `rhs`
+
+```c
+char *str1 = "Hello";
+char *str2 = "Hello";
+
+printf("%d", strcmp(str1, str2)); // prints 0
+```
+
+Less than and greater than are determined by the ASCII value of the first character that differs between the two strings.
+
+```c
+char *str1 = "Hello";
+char *str2 = "World";
+int result = strcmp(str1, str2);
+
+if (result < ) {
+    printf("%s is less than %s", str1, str2); // prints
+} else {
+    printf("%s is greater than %s", str1, str2); // does not print
+}
+```
 
 <Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
+  Do not concern yourself with the actual value of the integer returned by
+  strcmp. It is not guaranteed to be the difference between the ASCII values of
+  the first differing characters. Implementations may vary. Instead, use the
+  sign of the result to determine the relative order of the strings and check
+  for equality with 0.
 </Callout>
 
-{/* We know how to create a string literal, but what if we want to create a **string variable**? In the [Arrays](/docs/c-mechanics/arrays) page, we learned how to create an arrays of integers. In this section, we'll learn how to create arrays of characters. For example: */}
+#### `strncmp` (String Comparison with Length)
 
-## Accessing Characters in a String
+Compares two strings lexicographically with a specified length and returns an integer that indicates the relationship between the strings.
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+```c
+int strncmp(const char *lhs, const char *rhs, size_t n);
+```
 
-## C String Library
+`strncmp` accepts three arguments: `lhs`, `rhs`, and `n`. They are pointers to null-terminated strings to compare and the number of characters to compare.
 
-### `strcpy` (String Copy)
+`strncmp` returns an integer that indicates the relationship between the strings:
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+- `0` if the strings are equal
+- `< 0` if `lhs` is less than `rhs`
+- `> 0` if `lhs` is greater than `rhs`
 
-### `strncpy` (String Copy with Length)
+```c
+char *str1 = "Hello";
+char *str2 = "Heylo";
+int result = strncmp(str1, str2, 3);
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+if (result < ) {
+    printf("%s is less than %s", str1, str2); // prints
+} else {
+    printf("%s is greater than %s", str1, str2); // does not print
+}
+```
 
-### `strlen` (String Length)
+#### `strstr` (String Search)
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+Find the first occurrence of a substring in a string and returns a pointer to the first character of the substring. If the substring is not found, `NULL` is returned.
 
-### `strcat` (String Concatenation)
+```c
+char *strstr(const char *haystack, const char *needle);
+```
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+`strstr` accepts two arguments: `haystack` and `needle`. `haystack` is the string to search and `needle` is the substring to search for.
 
-### `strncat` (String Concatenation with Length)
+```c
+char *str = "Hello, world!";
+char *substr = "world";
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+char *result = strstr(str, substr);
 
-### `strcmp` (String Comparison)
+if (result != NULL) {
+    printf("Found substring at index %zu", result - str); // prints Found substring at index 7
+} else {
+    printf("Substring not found");
+}
+```
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+### String Conversion
 
-### `strncmp` (String Comparison with Length)
+#### `atof` (ASCII to Float)
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+Defined in `stdlib.h`.
 
-### `strstr` (String Search)
+Interprets a string as a floating-point number and returns the result.
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+```c
+double atof(const char *str);
+```
 
-### `atof` (ASCII to Float)
+`atof` accepts one argument: `str`. `str` is the string to convert.
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+```c
+char *str = "3.14";
+double num = atof(str);
 
-### `atoi` (ASCII to Integer)
+printf("%f", num); // prints 3.14
+```
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+#### `atoi` (ASCII to Integer)
 
-### `atol` (ASCII to Long)
+Defined in `stdlib.h`.
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+Interprets a string as an integer and returns the result.
+
+```c
+int atoi(const char *str);
+```
+
+`atoi` accepts one argument: `str`. `str` is the string to convert.
+
+```c
+char *str = "123";
+
+printf("%d", atoi(str)); // prints 123
+```
+
+#### `atol` (ASCII to Long)
+
+Defined in `stdlib.h`.
+
+Interprets a string as a long integer and returns the result.
+
+```c
+long atol(const char *str);
+```
+
+`atol` accepts one argument: `str`. `str` is the string to convert.
+
+```c
+char *str = "123456789";
+
+printf("%ld", atol(str)); // prints 123456789
+```
