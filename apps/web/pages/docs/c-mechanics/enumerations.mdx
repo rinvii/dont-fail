@@ -7,6 +7,113 @@ import { Callout } from "nextra-theme-docs";
 
 # Enumerations
 
-<Callout type="warning">
-  The content of this page is not yet ready. Check back in a few days.
-</Callout>
+An **enumeration** is a user-defined data type whose underlying type is restricted to a range of explicitly named constants (enumeration constants).
+
+For example, the following enumeration defines a new type called `color_t` whose underlying type is `int` and whose values are `RED`, `GREEN`, and `BLUE`:
+
+```c
+#include <stdio.h>
+
+enum color_t {
+    RED,
+    GREEN,
+    BLUE
+};
+
+int main(void) {
+    enum color_t color = RED;
+
+    printf("%d\n", color); // 0
+
+    return 0;
+}
+```
+
+## Enumerations as Integers
+
+By default, the first enumeration constant is assigned the value `0`, the second enumeration constant is assigned the value `1`, and so on.
+
+We can change the value of an enumeration constant by explicitly assigning it a value:
+
+```c
+#include <stdio.h>
+
+enum color_t {
+    RED = 1,
+    GREEN = 3,
+    BLUE = 4
+};
+
+int main(void) {
+    enum color_t color = RED;
+    enum color_t color2 = GREEN;
+
+    printf("%d\n", color); // 1
+    printf("%d\n", color2++); // 3
+    printf("%d\n", color2); // 4
+
+    return 0;
+}
+```
+
+## With `typedef`
+
+We can use the `typedef` keyword to create a new name for an enumeration type:
+
+```c
+// we use an anonymous enum (without a tag):
+typedef enum {
+    RED,
+    GREEN,
+    BLUE
+} color_t;
+
+/* same as:
+
+enum color_t {
+    RED,
+    GREEN,
+    BLUE
+} color_t;
+
+*/
+
+int main(void) {
+    color_t color = RED;
+
+    /* same as (if declared with a tag):
+
+    enum color_t color = RED;
+
+    */
+
+    return 0;
+}
+```
+
+## With `struct`
+
+We can use an enumeration as a member of a `struct`:
+
+```c
+#include <stdio.h>
+
+typedef enum {
+    RED,
+    GREEN,
+    BLUE
+} color_t;
+
+typedef struct {
+    int x;
+    int y;
+    color_t color;
+} point_t;
+
+int main(void) {
+    point_t point = { .x = 1, .y = 2, .color = RED };
+
+    return 0;
+}
+
+```
