@@ -217,9 +217,87 @@ int main() {
 
 ## Variable-Length Arrays (C99)
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
+**Variable-Length Arrays** are a feature introduced in C99 that allows us to declare arrays whose size is determined at runtime. This means that the size of the array can be determined by a variable. For example, the following code declares an array `numbers` whose size is determined by the variable `size`:
+
+```c
+int size = 5;
+int numbers[size];
+```
+
+We can use this in a function to iterate over an array whose size is determined at runtime:
+
+```c {3}
+#include <stdio.h>
+
+void processArray(int size, int arr[size]) {
+    for (int i = 0; i < size; i++) {
+        array[i] *= 2;
+    }
+}
+
+int main() {
+    int size;
+
+    printf("Enter the size of the array: ");
+    scanf("%d", &size);
+
+    int myArray[size];  // Declare a VLA 'myArray' of size 'size'
+
+    printf("Enter %d integers:\n", size);
+    for (int i = 0; i < size; i++) {
+        scanf("%d", &myArray[i]);
+    }
+
+    printf("Original array:\n");
+    for (int i = 0; i < size; i++) {
+        printf("%d ", myArray[i]);
+    }
+
+    processArray(size, myArray);  // Pass the VLA as a parameter to the function
+
+    printf("\nModified array (doubled):\n");
+    for (int i = 0; i < size; i++) {
+        printf("%d ", myArray[i]);
+    }
+
+    return 0;
+}
+```
+
+<Callout>
+  Notice how the parameters of `processArray` are `int size, int arr[size]` in
+  that order. Order is important when using variable-length arrays.
 </Callout>
+
+## Compound Literals (C99)
+
+{/* TODO: add compound literal section to structs and unions */}
+
+Sometimes we may want to pass an array to a function without having to declare a variable for it. We use **compound literals** to do this.
+
+A compound literal is an unnamed object that is created at runtime. It's a way to create an object of a type without declaring a variable. For example:
+
+```c
+#include <stdio.h>
+
+int average(int arr[], int size) {
+    int sum = 0;
+
+    for (int i = 0; i < size; i++) {
+        sum += arr[i];
+    }
+
+    return sum / size;
+}
+
+int main() {
+    int avg = average((int []) {10, 20, 30, 40, 50}, 5);
+
+    printf("%d\n", avg); // prints 30
+
+    return 0;
+}
+```
 
 ## Array Decay
 
@@ -267,11 +345,11 @@ Although they often seem to act in similar ways, it's important to understand th
 
   For example, the following code will print the size of the array `numbers` and the size of the pointer `p`:
 
-  ```c
-  int numbers[5];
-  int *p = numbers;
-  printf("%zu\n", sizeof(numbers)); // might print 20 (for an int size of 4 bytes)
-  printf("%zu\n", sizeof(p));      // might print 8 (on a 64-bit system)
-  ```
+```c
+int numbers[5];
+int *p = numbers;
+printf("%zu\n", sizeof(numbers)); // might print 20 (for an int size of 4 bytes)
+printf("%zu\n", sizeof(p));      // might print 8 (on a 64-bit system)
+```
 
 - An array has a fixed size meaning there's a limit to the number of elements it can hold. When using a pointer to access blocks of memory, especially dynamically allocated ones, there are no inherent bounds. This flexibility can be powerful but also dangerous, as it introduces the potential for out-of-bounds access, which can lead to undefined behavior.
