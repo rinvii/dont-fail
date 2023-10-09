@@ -1,0 +1,280 @@
+---
+title: Algorithm Analysis
+description: Learn about asymptotic analysis and the big-O notation.
+---
+
+import { Callout } from "nextra-theme-docs";
+
+# Algorithm Analysis
+
+When we are given algorithm to solve a problem, we are interested in knowing how **good or bad** the algorithm is. To do this, we must understand the **complexity** of the algorithm. In general, there are three types of complexity:
+
+- **Worst-case complexity**: The maximum number of steps taken on any instance of size $n$.
+- **Average-case complexity**: The average number of steps taken on any instance of size $n$.
+- **Best-case complexity**: The minimum number of steps taken on any instance of size $n$.
+
+In particular, we are more interested in the worst-case complexity of an algorithm because it's more useful in determining the efficiency of the algorithm **compared** to other algorithms.
+
+## Big Oh Notation
+
+To find the worst-case complexity of an algorithm, we use the **Big Oh notation** which is a mathematical notation that describes the maximum number of steps an algorithm will take given an input of size $n$.
+
+For example, if we have an algorithm that takes $n^2 + 2n + 1$ steps to complete, we write:
+
+$$
+O(n^2)
+$$
+
+This is because the $n^2$ term is the largest term in the expression. We can also say that the algorithm is **order of $n^2$**.
+
+Let's look at another example. Suppose we have two algorithms:
+
+- Algorithm A takes $n^2 + 2n + 1$ steps to complete.
+- Algorithm B takes $2n^2 + 3n + 1$ steps to complete.
+
+We can say that both Algorithm A and Algorithm B are **order of $n^2$**. This is because the $n^2$ term is the largest term in both expressions.
+
+Notice that we ignored the constants and lower order terms in the expressions. This is because the constants are insignificant when the input size $n$ is large.
+
+To put it another way, the Big Oh notation describes the **growth rate** of the algorithm. Thus, given a function that takes $f(n) = 0.001n^2 + 40$ steps to complete and another function that takes $g(n) = 100n^2 + n$ steps to complete, we treat both functions as $O(n^2)$ because they both grow at a similar rate. That is, we only care that they both grow at rate of $n^2$ for large values of $n$.
+
+<Callout>
+  In Big Oh notation, we discard multiplicative constants and lower order terms.
+</Callout>
+
+## Complexities of Different Function Classes
+
+We will use functions in this section to describe the steps taken by an algorithm, which is it's **complexity**.
+
+The Big Oh notation groups functions into different classes such that functions in the same class are essentially equivalent.
+
+For example, the following functions are all in the same class with the complexity of $O(n^2)$:
+
+$$
+\begin{aligned}
+f(n) &= 2n^2 + 3n + 1 \\
+g(n) &= \frac12n^2 + 100n + 1 \\
+h(n) &= 1000n^2 + 1000n + 1 \\
+\end{aligned}
+$$
+
+Using this idea, we can examine the complexities of different function classes.
+
+The list below shows the complexities of some common functions classes in order of increasing complexity:
+
+- **Constant functions**: $f(n) = 1$. Such functions may just take the sum of two numbers or print out a line(s) of text.
+- **Logarithmic functions**: $f(n) = \log n$. Logarithmic complexity is common in algorithms that use **divide and conquer** techniques like binary search.
+- **Linear functions**: $f(n) = n$. These functions measure the cost of iterating through a list of size $n$ either to identify a particular element, perform some operation on each element, or take the average of all elements.
+- **Superlinear functions**: $f(n) = n \lg n$. This class of functions is seen in algorithms such as **quicksort** and **mergesort**. They grow a little faster than linear functions.
+- **Quadradic functions**: $f(n) = n^2$. These functions measure the cost of iterating through a list of size $n$ twice. For example, to find all pairs of elements in a list. These functions are seen in algorithms such as insertion sort, selection sort, and bubble sort.
+- **Cubic functions**: $f(n) = n^3$. Such functions are seen in algorithms such as matrix multiplication.
+- **Exponential functions**: $f(n) = c^n$ where $c > 1$. Functions like $2^n$ arise in algorithms that use **brute force** techniques such as generating all subsets of a set. They are not very efficient.
+- **Factorial functions**: $f(n) = n!$. These functions arise when generating all permutations of a set. Factorial functions are the least efficient.
+
+In summary:
+
+$$
+1 < \log n < n < n \lg n < n^2 < n^3 < 2^n < n!
+$$
+
+### Esoteric Functions
+
+Sometimes, esoteric functions make apperances in the exams. Let's just run through them to know what they are and where they come from.
+
+- $f(n) = \log \log n$: This function is the logarithm of the logarithm of $n$. One example of this algorithm is doing a binary search on a sorted array of only $\lg n$ items.
+- $f(n) = \frac{\log n}{\log \log n}$: This function grows a little faster than $\log n$ but a little slower than $n$. To see where this arises, consider an $n$-leaf rooted tree of degree $d$. For binary trees, that is, when $d = 2$, the height $h$ is given
+
+  $$
+  \begin{align*}
+  n &= 2^h \\
+  h &= \lg n
+  \end{align*}
+  $$
+
+  Now, consider the height of the tree for some arbitrary degree $d = \log n$. Then,
+
+  $$
+  \begin{align*}
+  n &= (\log n)^h \\
+  \log n &= h \log \log n \\
+  h &= \frac{\log n}{\log \log n}
+  \end{align*}
+  $$
+
+- $f(n) = \log^2 n$: This is the product of two logarithms: $(\log n)\times(\log n)$. The "log squared" function typically arises in intricate data structures like a binary tree where each node represents another data structure, perhaps ordered on a different key.
+- $f(n) = \sqrt n$: Although not really esoteric, it represents the class of "sublinear" functions. These functions grow slower than linear functions but faster than logarithmic functions.
+
+In summary, we have learned thus far:
+
+$$
+1 < \log \log n < \frac{\log n}{\log \log n} < \log n < \log^2 n < \sqrt n < n < n \lg n < n^2 < n^3 < 2^n < n!
+$$
+
+## Asymptotic Analysis
+
+In the previous section, we learned about the Big Oh notation and the complexities of different function classes. In this section, we will learn about **asymptotic analysis** which is the process by which we determine the complexity of an algorithm. In particular, we will analyze the worst case runtime in Big Oh notation.
+
+Suppose we have the following code snippet with input sizes of `N` and `M`:
+
+```c showLineNumbers
+for (int i = N; i > 0; i--) {
+  for (int j = 0; j <= M; j++) {
+    printf("Hello, world!\n");
+  }
+}
+```
+
+To determine the complexity of this code snippet, let's first examine simple operations:
+
+- Line 3: `printf("Hello, world!")` takes $O(1)$ steps to complete.
+
+  There is not much to glean from this operation. However, we can see that the number of steps taken by this operation is **independent** of the input size.
+
+Now, let's examine the loops:
+
+- Line 2: `for (int j = 0; j <= M; j++)` iterates `M + 1` times because of `<=`. Therefore, it's complexity is $O(M)$.
+- Line 1: `for (int i = N; i > 0; i--)` iterates `N` times so it's complexity is $O(N)$.
+
+Since the loops are nested, we multiply the complexities of the loops to get the complexity of the code snippet:
+
+$$
+O(N) \times O(M) = O(NM)
+$$
+
+It's great that we found the complexity, but so far we have only used some intuition and a basic fact about nested loops. Is there a guideline we can follow to determine the complexity of an algorithm?
+
+The answer is yes.
+
+### Guidelines for Determining Complexity
+
+Analyzing the complexity of an algorithm is a matter of **counting** the number of steps taken by the algorithm. It might take some practice, but we just need to follow a few simple rules along with recognizing some common patterns.
+
+Here's a step-by-step process for tackling these problems:
+
+1.  **Identify Simple Operations:** Identify the simple operations in the algorithm. These are operations that take a constant number of steps to complete. For example, arithmetic operations, assignment operations, and printing a line of text.
+2.  **Examine Loops:** These are operations that iterate over a list of items. For example, `for` loops, `while` loops, and `do-while` loops.
+
+    - **Single Loops:** The complexity of a simple loop from $0$ to $N$ is $O(N)$ when there's a constant amount of work inside the loop.
+    - **Nested Loops:** If there's a loop inside another loop, their complexities multiply. For two nested loops iterating up to $N$ and $M$ respectively, the total complexity is $O(NM)$. **It's best to start with the inner loop and work your way out.**
+    - **Non-linear Loops:** If the loop doesn't increment linearly or if the termination condition deviates from a linear progression, then the complexity is not $O(N)$. In this case, analyze the loop in terms of the behavior of the loop variable.
+
+3.  **Consecutive Statements:** If there are consecutive statements, add the complexities of the statements together. So if one loop has complexity $O(N)$ and another loop has complexity $O(M)$, then the combine complexity is $O(N + M)$.
+4.  **Method/Function Calls Inside Loops:** If a function is called inside a loop and that function has a complexity of $O(K)$, and if the loop runs $O(N)$ times, then the combined complexity is $O(NK)$.
+5.  **Recursion:** Recursive calls are tricky. The complexity is often found by identifying the base case's complexity and the number of recursive calls at each recursion level. We will cover this in depth later on.
+6.  **Drop Non-Dominant Terms:** In Big Oh notation, we drop non-dominant terms. For example, if we have $O(N^2 + N)$, we drop the $N$ term and write $O(N^2)$.
+
+    - Note that the difference between this step and step 3, In this step, we are dropping terms that are not dominant. In step 3, we are adding terms that are not dominant. In general, we drop terms that have a slower growth rate compared to the term with the fastest growth rate.
+
+7.  **Factor Out Constants:** Big Oh notation is about expressing growth rates and isn't concerned with constant factors. So $O(2N)$ is the same as $O(N)$. For example, we may have an algorithm that runs twice as fast when implemented in C, but when implemented in Python, it runs twice as slow. We don't care about which language (and therefore which constant factor) is used to implement the algorithm. We care about the bigger picture and the growth rate of the algorithm in a general sense.
+
+8.  **Utilize Known Complexities:** If you know the complexity of a common algorithm, you can use it to determine the complexity of a more complex algorithm. For example, if you know that the complexity of a binary search is $O(\log n)$, you can use it to determine the complexity of a more complex algorithm that uses binary search.
+
+    For example, given an array `A` of size `N`:
+
+    ```c
+    for (int i = 0; i < N; i++) {
+      binarySearch(A, N);
+    }
+    ```
+
+    We can use step 4 which says that the complexity of a function call inside a loop is the product of the complexity of the function and the number of iterations of the loop. Thus, the complexity of the algorithm is $O(N \log N)$.
+
+    Indeed, following step 2, `binarySearch` could also be replaced with just a loop with a complexity of $O(\log N)$ and the complexity of the algorithm would still be $O(N \log N)$.
+
+### Non-linear Loops (Increment Statement)
+
+Sometimes, we encounter loops that don't increment linearly because of the **increment statement**. For example, consider the following code snippet:
+
+```c
+for (int i = 1; i < N; i *= 2) {
+  printf("Hello, world!\n");
+}
+```
+
+The loop iterates $O(\log N)$ times because the increment statement is `i *= 2`. This is because the loop iterates $O(\log N)$ times before `i` becomes greater than `N`. In other words, the loop's range is divided by a constant factor (in this case, $2$) in each iteration.
+
+Consider a similar code snippet to the one above:
+
+```c
+for (int i = 0; i < N; i *= 3) {
+  printf("Hello, world!\n");
+}
+```
+
+Although this loop's range is divided by a different constant factor ($3$), it's Big Oh complexity is still $O(\log N)$.
+
+We can confirm this mathematically using the logarithm change of base formula where we change from base $b$ to base $d$:
+
+$$
+\begin{align*}
+  \log_b a &= \frac{\log_d a}{\log_d b} \\
+  \log_3 n &= \frac{\log_2 n}{\log_2 3} \\
+  O(\log_3 n) &= O\left(\frac{\log_2 n}{\log_2 3}\right) \\
+  &= O\left(\log_2(n)\cdot\frac{1}{\log_2 3}\right) \\
+  &= O\left(\log_2(n)\right) \\
+  &= O(\log n)
+\end{align*}
+$$
+
+Notice that we factored out $\frac{1}{\log_2 3}$ because it's a constant factor and therefore insignificant in Big Oh notation. This should reinforce the idea that Big Oh notation is concerned with growth rates and not constant factors.
+
+We are now seeing a pattern. Consider similar examples:
+
+```c
+for (int i = N; i > 0; i /= 2) {
+  printf("Hello, world!\n");
+}
+
+for (int i = N; i >= 0; i /= 3) {
+  printf("Hello, world!\n");
+}
+
+for (int i = N / 2; i >= 0; i /= 2) {
+  printf("Hello, world!\n");
+}
+
+for (int i = 0; i * 2 < N; i *= 2) {
+  printf("Hello, world!\n");
+}
+```
+
+All of these loops have a Big Oh complexity of $O(\log N)$. And, in our analysis of the loops above, we have focused on the loop variable `i`. This is because the loop variable is the **control variable** that determines the number of iterations.
+
+<Callout>
+  By expressing the loop variable in terms of the input size, we can determine
+  the complexity of the loop much easier.
+</Callout>
+
+### Non-linear Loops (Termination Condition)
+
+We may encounter loops whose termination condition deviates from a linear progression. For example, consider the following code snippet:
+
+```c
+for (int i = 0; i * i < N; i++) {
+  printf("Hello, world!\n");
+}
+```
+
+In this loop, the condition will be true as long as the square of `i` is less than `N`. To find out which values of `i` satisfy this condition, we take the square root of both sides:
+
+$$
+\begin{align*}
+  i^2 &< N \\
+  \sqrt{i^2} &< \sqrt{N} \\
+  i &< \sqrt{N}
+\end{align*}
+$$
+
+This tells us that the loop will iterate from $0$ up to (but not including) $\sqrt{N}$. And so the loop will run approximately $\sqrt{N}$ times. Therefore, the Big Oh complexity of this loop is $O(\sqrt{N})$.
+
+## Recursion Complexity Analysis
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## Common Algorithms and Their Complexities
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>

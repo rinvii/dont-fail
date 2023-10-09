@@ -4,5 +4,9 @@
   "input-and-output": "Input and Output",
   "pointers": "Pointers",
   "stack-versus-heap": "Stack versus Heap",
+  "algorithm-analysis": "Algorithm Analysis",
+  "---": {
+    "type": "separator"
+  },
   "ascii-chart": "ASCII Chart"
 }
