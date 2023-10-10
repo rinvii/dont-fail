@@ -8,6 +8,7 @@
   "structures": "Structures",
   "unions": "Unions",
   "enumerations": "Enumerations",
+  "stack-versus-heap": "Stack versus Heap",
   "scopes": {
     "display": "hidden"
   }

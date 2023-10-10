@@ -3,7 +3,6 @@
   "c-mechanics": "C Mechanics",
   "input-and-output": "Input and Output",
   "pointers": "Pointers",
-  "stack-versus-heap": "Stack versus Heap",
   "algorithm-analysis": "Algorithm Analysis",
   "---": {
     "type": "separator"
