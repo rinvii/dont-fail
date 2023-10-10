@@ -1,0 +1,8 @@
+{
+  "linked-list": "Linked List",
+  "circular-linked-list": "Circular Linked List",
+  "doubly-linked-list": "Doubly Linked List",
+  "scopes": {
+    "display": "hidden"
+  }
+}

@@ -1,9 +1,13 @@
 {
   "overview": "Overview",
+  "getting-started": "Getting Started",
   "c-mechanics": "C Mechanics",
   "input-and-output": "Input and Output",
   "pointers": "Pointers",
   "algorithm-analysis": "Algorithm Analysis",
+  "recursion": "Recursion",
+  "linear-data-structures": "Linear Data Structures",
+  "abstract-data-types": "Abstract Data Types",
   "---": {
     "type": "separator"
   },
