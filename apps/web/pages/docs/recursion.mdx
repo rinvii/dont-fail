@@ -1,0 +1,237 @@
+---
+title: Recursion
+description: Learn about recursion!
+---
+
+import { Callout } from "nextra-theme-docs";
+
+# Recursion
+
+**Recursion** is a technique for solving problems whereby a program breaks a problem into pieces and calling the program itself to solve each piece.
+
+In order to understand recursion, let's first dive into **mathematical induction.** I promise we won't get deep into the math, but it's important to understand the "why" of recursion.
+
+Induction is a proof technique for proving a statement $P(n)$ for all $n \in \mathbb{N}$. That is, for example, if $P(1)$ is true, and if $P(k) \implies P(k+1)$ for all $k \in \mathbb{N}$, then $P(n)$ is true for all $n \in \mathbb{N}$.
+
+In other words, given $P(n)$, we have two cases:
+
+- **Base case:** If $n = 1$ holds true for $P(n)$
+- **Induction step:** And if $n = k$ holds true for $P(n)$ for some $k \in \mathbb{N}$, then $n = k + 1$ must also hold true for $P(n)$
+
+Then $P(n)$ is true for all $n \in \mathbb{N}$.
+
+That's all the math we need to know. This is all to say that in order to have a **correct** recursive algorithm, it must be able to be proven correct using mathematical induction.
+
+<Callout>
+  Why is mathematical induction important to recursion? Because recursion **is**
+  mathematical induction in action.
+</Callout>
+
+## Defining Our Recursive Algorithm
+
+In induction, we have a base case and an induction step. In recursion, we have a base case and a recursive case.
+
+<Callout>
+  Every recursive algorithm must have a base case and a recursive case.
+</Callout>
+
+### Base Case
+
+The **base case** is the simplest scenario where the problem can be solved directly without further recursion. It's the stopping condition that prevents the recursion from continuing indefinitely. In your algorithm, you must first define the base case and then define what happens when you reach the base case.
+
+For example, in a recursive algorithm to compute the factorial of a non-negative integer `n`, the base case is when `n` is 0, and the result is defined as 1:
+
+```c {3-5}
+int factorial(int n) {
+  // base case
+  if (n == 0) {
+    return 1;
+  }
+}
+```
+
+The reason we return 1 is because $0! = 1$. This is the simplest case where we can solve the problem directly by calling the function with the smallest non-negative integer. Thus, `factorial(0){:c}` must return 1.
+
+### Recursive case
+
+The **recursive case** defines how to break down a larger instance of a problem into one or smaller instances of the same problem, moving closer to the base case. This step often involves calling the same function (or algorithm) recursively with modified input.
+
+Continuing with the factorial example, the recursive step calculates the factorial of `n` based on the factorial of `n - 1`:
+
+```c {8}
+int factorial(int n) {
+  // base case
+  if (n == 0) {
+    return 1;
+  }
+
+  // recursive case
+  return n * factorial(n - 1);
+}
+```
+
+Here, we multiply `n` by the factorial of `n - 1`, which is a step closer to the base case and a smaller instance of the same problem.
+
+### Putting It All Together
+
+With the base case and recursive step defined, the recursive algorithm works by repeatedly breaking down the problem into smaller parts until it reaches the base case. Once the base case is reached, the recursion stops, and the algorithm can compute the final result.
+
+We can visualize this algorithm for computing the factorial of 5:
+
+![Recursive Factorial](/recursive-factorial.jpg)
+
+Recursion can be a powerful technique for solving problems, but it's essential to ensure that your base case and recursive step are well-defined to avoid infinite recursion.
+
+In the following sections, we will explore various examples of recursive algorithms.
+
+{/* REVIEW: there are two inductive proof errors to look for which will help in desigining recursive algorithms, consider writing them */}
+
+## Fibonacci Sequence
+
+The **Fibonacci sequence** is a sequence of numbers where each number is the sum of the two preceding numbers. The first two numbers in the sequence are 0 and 1, and the sequence continues indefinitely.
+
+I'm personally not a math person, so I will steal the recursive formula from [Wikipedia](https://en.wikipedia.org/wiki/Fibonacci_sequence):
+
+The Fibonacci numbers may be defined by the recurrence relation $F_0 = 0, F_1 = 1$ and $F_n = F_{n - 1} + F_{n - 2}$ for $n > 1$.
+
+A recursive function written in C to compute the $n$th Fibonacci number is as follows:
+
+```c
+int fibonacci(int n) {
+  // base case
+  if (n == 0) {
+    return 0;
+  }
+
+  // base case
+  if (n == 1) {
+    return 1;
+  }
+
+  // recursive case
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+```
+
+Let's also examine the complexity of our algorithm. For every recursive call, we make two recursive calls. Those two recursive calls each make two recursive calls, and so on. The amount of calls we make: $1 \rightarrow 2 \rightarrow 4 \rightarrow 8 \rightarrow 16 \rightarrow \cdots$ This means that the number of recursive calls grows exponentially with the input size. Thus, the complexity of our algorithm is $O(2^n)$.
+
+<Callout type="info">
+  Technically, $F_{n + 1}/F_{n}/\approx \phi = (1+\sqrt{5})/2 \approx 1.61803$.
+  This means that the complexity of our algorithm is actually $O(\phi^n)$.
+  However, since $\phi$ is a constant, we can drop it and say that the
+  complexity is $O(2^n)$.
+</Callout>
+
+{/* TODO: can cache fibonacci, maybe implement */}
+
+## Binary Search
+
+Binary search is a classic algorithm for searching for a specific element within a **sorted array**. In this section, we will explore the recursive implementation of binary search.
+
+Before we implement, we have to ensure that:
+
+- The array is sorted
+- The array is not empty
+
+Given these facts, we have a sorted array `arr` of size `n` and a target value `target`. We want to find the index of `target` in `arr` if it exists, or return `-1` if it does not exist.
+
+```c
+int binarySearch(int[] arr, int target, int start, int end) {
+  // base case: target not found
+  if (start > end) {
+    return -1;
+  }
+
+  int mid = (start + end) / 2; // integer division, rounds down 3 / 2 = 1
+
+  // base case: target found
+  if (arr[mid] == target) {
+    return mid;
+  }
+
+  if (arr[mid] < target) {
+    // recursive case: search right subarray
+    return binarySearch(arr, target, mid + 1, end);
+  } else {
+    // recursive case: search left subarray
+    return binarySearch(arr, target, start, mid);
+  }
+}
+```
+
+Analyzing the complexity of this algorithm, we can see on every recursive call, we are calling the function with half the size of the array. Thus, the complexity of our algorithm is $O(\log n)$.
+
+## Linear Search
+
+Linear search is a simple searching algorithm that iterates through an array and checks if the current element is the target element. If it is, we return the index of the element. If we reach the end of the array without finding the target element, we return `-1`.
+
+Given:
+
+- An array `arr`
+- Non-negative integer `size` representing the size of `arr`
+- A target value `target`
+
+First we implement it iteratively:
+
+```c
+int linearSearch(int[] arr, int size, int target) {
+  for (int i = 0; i < size; i++) {
+    if (arr[i] == target) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+```
+
+Our recursion implementation:
+
+```c
+int linearSearch(int[] arr, int size, int target, int i) {
+  // base case: target not found, reached end of array
+  if (i == size) {
+    return -1;
+  }
+
+  // base case: target found
+  if (arr[i] == target) {
+    return i;
+  }
+
+  // recursive case: search next element
+  return linearSearch(arr, size, target, i + 1);
+}
+```
+
+Both implementations have the same complexity: $O(n)$.
+
+## Palindrome
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## Greatest Common Divisor
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## Russian Peasant Multiplication
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## Printing Numbers in Different Bases
+
+<Callout type="warning">
+  The content of this section is not yet ready. Check back in a few days.
+</Callout>
+
+## Further Learning
+
+This page be a good introduction to recursion. Let this be a stepping stone to analyze other recursive algorithms used in other places of this website. We will see recursion again in the following pages:
+
+- [Linked Lists](/docs/linear-data-structures/linked-list)
