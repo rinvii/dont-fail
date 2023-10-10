@@ -13,7 +13,11 @@ When we are given algorithm to solve a problem, we are interested in knowing how
 - **Average-case complexity**: The average number of steps taken on any instance of size $n$.
 - **Best-case complexity**: The minimum number of steps taken on any instance of size $n$.
 
+$n$ is the **input size** of the algorithm. For example, if we have an algorithm that takes an array of size $n$ as input, then $n$ is the input size.
+
 In particular, we are more interested in the worst-case complexity of an algorithm because it's more useful in determining the efficiency of the algorithm **compared** to other algorithms.
+
+{/* TODO: add time complexity and space complexity?? */}
 
 ## Big Oh Notation
 
@@ -79,7 +83,7 @@ $$
 
 ### Esoteric Functions
 
-Sometimes, esoteric functions make apperances in the exams. Let's just run through them to know what they are and where they come from.
+Sometimes, esoteric functions make apperances in unexpected places (like exams). Let's just run through them to know what they are and where they come from.
 
 - $f(n) = \log \log n$: This function is the logarithm of the logarithm of $n$. One example of this algorithm is doing a binary search on a sorted array of only $\lg n$ items.
 - $f(n) = \frac{\log n}{\log \log n}$: This function grows a little faster than $\log n$ but a little slower than $n$. To see where this arises, consider an $n$-leaf rooted tree of degree $d$. For binary trees, that is, when $d = 2$, the height $h$ is given
@@ -266,6 +270,8 @@ $$
 $$
 
 This tells us that the loop will iterate from $0$ up to (but not including) $\sqrt{N}$. And so the loop will run approximately $\sqrt{N}$ times. Therefore, the Big Oh complexity of this loop is $O(\sqrt{N})$.
+
+We have expressed $i$ in terms of the input size $N$ to determine the complexity of the loop. In this case, we solved for $i$ in terms of $N$.
 
 ## Recursion Complexity Analysis
 
