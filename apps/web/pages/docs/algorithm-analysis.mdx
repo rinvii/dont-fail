@@ -226,7 +226,7 @@ When analyzing nested loops, it's common to determine the overall complexity by 
    }
    ```
 
-   **Complexity:** The outer loop runs `N` times. The inner loop runs $log i$ times, where `i` is the current value of the outer loop. Therefore, the total number of iterations is approximately `N * log(N)`, and therefore the complexity is $O(N \log N)$.
+   **Complexity:** The outer loop runs `N` times. The inner loop runs $\log i$ times, where `i` is the current value of the outer loop. Therefore, the total number of iterations is approximately `N * log(N)`, and therefore the complexity is $O(N \log N)$.
 
 In summary, while the principle of multiplying complexities often holds, dependencies between loops, especially when the inner loop exhibits non-linear behavior, require a more detailed analysis. Always consider the specific behavior of the loops and their interdependencies to ensure an accurate complexity assessment.
 
