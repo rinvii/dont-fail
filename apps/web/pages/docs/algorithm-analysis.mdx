@@ -160,6 +160,7 @@ Here's a step-by-step process for tackling these problems:
 
     - **Single Loops:** The complexity of a simple loop from $0$ to $N$ is $O(N)$ when there's a constant amount of work inside the loop.
     - **Nested Loops:** If there's a loop inside another loop, their complexities multiply. For two nested loops iterating up to $N$ and $M$ respectively, the total complexity is $O(NM)$. **It's best to start with the inner loop and work your way out.**
+      - If the inner loop's boundary is dependent on the outer loop's variable, there's a dependent relationship. In such cases, sum the operations of the inner loop across all outer iterations. However, even with this dependency, the overall complexity might often still be determined by the product of the two loop's individual complexities, but it's essential to verify.
     - **Non-linear Loops:** If the loop doesn't increment linearly or if the termination condition deviates from a linear progression, then the complexity is not $O(N)$. In this case, analyze the loop in terms of the behavior of the loop variable.
 
 3.  **Consecutive Statements:** If there are consecutive statements, add the complexities of the statements together. So if one loop has complexity $O(N)$ and another loop has complexity $O(M)$, then the combine complexity is $O(N + M)$.
@@ -185,12 +186,64 @@ Here's a step-by-step process for tackling these problems:
 
     Indeed, following step 2, `binarySearch` could also be replaced with just a loop with a complexity of $O(\log N)$ and the complexity of the algorithm would still be $O(N \log N)$.
 
+### Dependency in Nested Loops
+
+When analyzing nested loops, it's common to determine the overall complexity by multiplying the complexities of the inner and outer loops. However, the relationship between these loops can introduce nuances that might affect this straightforward multiplication. Let's delve into the different scenarios:
+
+1. **Independent Loops:** In cases where the inner loop's boundary doesn't rely on the outer loop's variable, the complexities multiply directly. This is the most straightforward scenario.
+
+   ```c
+   for (int i = 0; i < N; i++) {
+     for (int j = 0; j < M; j++) {
+       // constant time operation
+     }
+   }
+   ```
+
+   **Complexity:** $O(NM)$
+
+2. **Dependent Linear Loops:** If the inner loop's boundary is linearly dependent on the outer loop's variable, the complexities still multiply. However, you might need to sum over the series to get the exact count.
+
+   ```c
+   for (int i = 0; i < N; i++) {
+     for (int j = 0; j < i; j++) {
+       // constant time operation
+     }
+   }
+   ```
+
+   **Total number of iterations of nested loops:** $1 + 2 + 3 + \cdots + N = \frac{N(N + 1)}{2}$
+
+   **Complexity:** $O(\frac{N(N + 1)}{2}) = O(N^2)$
+
+3. **Dependent Non-linear Loops:** Things get more intricate when the inner loop's boundary is non-linearly dependent on the outer loop's variable. In such cases, the relationship can affect the overall complexity in more nuanced ways.
+
+   ```c
+   for (int i = 2; i < N; i++) {
+     for (int j = 2; j < i; j *= 2) {
+       // constant time operation
+     }
+   }
+   ```
+
+   **Complexity:** The outer loop runs `N` times. The inner loop runs $log i$ times, where `i` is the current value of the outer loop. Therefore, the total number of iterations is approximately `N * log(N)`, and therefore the complexity is $O(N \log N)$.
+
+In summary, while the principle of multiplying complexities often holds, dependencies between loops, especially when the inner loop exhibits non-linear behavior, require a more detailed analysis. Always consider the specific behavior of the loops and their interdependencies to ensure an accurate complexity assessment.
+
+<Callout>
+  Dependency between loops can affect the overall complexity in more nuanced
+  ways. However, the principle of multiplying complexities of nested loops may
+  still hold.
+</Callout>
+
+{/* TODO: add example where initialization statement is dependent on outer loop variable */}
+
 ### Non-linear Loops (Increment Statement)
 
 Sometimes, we encounter loops that don't increment linearly because of the **increment statement**. For example, consider the following code snippet:
 
 ```c
-for (int i = 1; i < N; i *= 2) {
+for (int i = 3; i < N; i *= 2) {
   printf("Hello, world!\n");
 }
 ```
@@ -200,7 +253,7 @@ The loop iterates $O(\log N)$ times because the increment statement is `i *= 2`.
 Consider a similar code snippet to the one above:
 
 ```c
-for (int i = 0; i < N; i *= 3) {
+for (int i = 5; i < N; i *= 3) {
   printf("Hello, world!\n");
 }
 ```
@@ -237,7 +290,7 @@ for (int i = N / 2; i >= 0; i /= 2) {
   printf("Hello, world!\n");
 }
 
-for (int i = 0; i * 2 < N; i *= 2) {
+for (int i = 2; i * 2 < N; i *= 2) {
   printf("Hello, world!\n");
 }
 ```
@@ -284,3 +337,72 @@ We have expressed $i$ in terms of the input size $N$ to determine the complexity
 <Callout type="warning">
   The content of this section is not yet ready. Check back in a few days.
 </Callout>
+
+### Sieve of Eratosthenes
+
+There are many implementations of the Sieve of Eratosthenes. However, the important fact that we need to know is that the complexity of the algorithm is $O(N \log \log N)$ given an input size of $N$.
+
+Here is the implementation used by this course which returns a boolean array where `is_prime[i]` is `true` if `i` is prime and `false` otherwise:
+
+```c
+bool* sieveOfEratosthenes(int n) {
+    if (n < 2) {
+        return NULL; // There are no prime numbers less than 2.
+    }
+
+    // Create an array to store whether each number is prime.
+    bool* is_prime = malloc((n + 1) * sizeof(bool));
+    if (is_prime == NULL) {
+        // Memory allocation failed.
+        return NULL;
+    }
+
+    // Initialize the array to assume all numbers are prime.
+    for (int i = 0; i <= n; i++) {
+        is_prime[i] = true;
+    }
+
+    int sqrt_n = (int)sqrt((double)n);
+
+    // Mark multiples of prime numbers as non-prime.
+    for (int i = 2; i <= sqrt_n; i++) {
+        if (is_prime[i]) {
+            for (int j = i * i; j <= n; j += i) {
+                is_prime[j] = false;
+            }
+        }
+    }
+
+    return is_prime;
+}
+```
+
+Another implementation of the Sieve of Eratosthenes which is a little more optimized is as follows:
+
+```c
+char* eratosthenes(int n, int *c)
+{
+    char* sieve;
+
+    if(n < 2)
+        return NULL;
+
+    *c = n - 1;     /* primes count */
+    int m = (int) sqrt((double) n);
+
+    /* calloc initializes to zero */
+    sieve = calloc(n + 1, sizeof(char));
+    sieve[0] = 1;
+    sieve[1] = 1;
+    for(int i = 2; i <= m; i++)
+        if(!sieve[i])
+            for (int j = i * i; j <= n; j += i)
+                if(!sieve[j]){
+                    sieve[j] = 1;
+                    --(*c);
+                }
+    return sieve;
+}
+```
+
+This implementation returns a `char` array where `sieve[i]` is `1` if `i` is non-prime and `0` if it is prime. It also mutates the `c` variable to store the number of primes found. The optimization in this code involves starting the inner loop at `i*i` instead of `i*2` when marking the multiples of the current prime number `i`. This optimization is crucial for reducing redundant work and improving the efficiency of the algorithm.
