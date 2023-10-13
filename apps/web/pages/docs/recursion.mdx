@@ -43,10 +43,10 @@ For example, in a recursive algorithm to compute the factorial of a non-negative
 
 ```c {3-5}
 int factorial(int n) {
-  // base case
-  if (n == 0) {
-    return 1;
-  }
+    // base case
+    if (n == 0) {
+        return 1;
+    }
 }
 ```
 
@@ -61,9 +61,9 @@ Continuing with the factorial example, the recursive step calculates the factori
 ```c {8}
 int factorial(int n) {
   // base case
-  if (n == 0) {
-    return 1;
-  }
+    if (n == 0) {
+        return 1;
+    }
 
   // recursive case
   return n * factorial(n - 1);
@@ -98,18 +98,18 @@ A recursive function written in C to compute the $n$th Fibonacci number is as fo
 
 ```c
 int fibonacci(int n) {
-  // base case
-  if (n == 0) {
-    return 0;
-  }
+    // base case
+    if (n == 0) {
+        return 0;
+    }
 
-  // base case
-  if (n == 1) {
-    return 1;
-  }
+    // base case
+    if (n == 1) {
+        return 1;
+    }
 
-  // recursive case
-  return fibonacci(n - 1) + fibonacci(n - 2);
+    // recursive case
+    return fibonacci(n - 1) + fibonacci(n - 2);
 }
 ```
 
@@ -137,25 +137,25 @@ Given these facts, we have a sorted array `arr` of size `n` and a target value `
 
 ```c
 int binarySearch(int[] arr, int target, int start, int end) {
-  // base case: target not found
-  if (start > end) {
-    return -1;
-  }
+    // base case: target not found
+    if (start > end) {
+        return -1;
+    }
 
-  int mid = (start + end) / 2; // integer division, rounds down 3 / 2 = 1
+    int mid = (start + end) / 2; // integer division, rounds down 3 / 2 = 1
 
-  // base case: target found
-  if (arr[mid] == target) {
-    return mid;
-  }
+    // base case: target found
+    if (arr[mid] == target) {
+        return mid;
+    }
 
-  if (arr[mid] < target) {
-    // recursive case: search right subarray
-    return binarySearch(arr, target, mid + 1, end);
-  } else {
-    // recursive case: search left subarray
-    return binarySearch(arr, target, start, mid);
-  }
+    if (arr[mid] < target) {
+        // recursive case: search right subarray
+        return binarySearch(arr, target, mid + 1, end);
+    } else {
+        // recursive case: search left subarray
+        return binarySearch(arr, target, start, mid);
+    }
 }
 ```
 
@@ -175,13 +175,13 @@ First we implement it iteratively:
 
 ```c
 int linearSearch(int[] arr, int size, int target) {
-  for (int i = 0; i < size; i++) {
-    if (arr[i] == target) {
-      return i;
+    for (int i = 0; i < size; i++) {
+        if (arr[i] == target) {
+        return i;
+        }
     }
-  }
 
-  return -1;
+    return -1;
 }
 ```
 
@@ -189,18 +189,18 @@ Our recursion implementation:
 
 ```c
 int linearSearch(int[] arr, int size, int target, int i) {
-  // base case: target not found, reached end of array
-  if (i == size) {
-    return -1;
-  }
+    // base case: target not found, reached end of array
+    if (i == size) {
+        return -1;
+    }
 
-  // base case: target found
-  if (arr[i] == target) {
-    return i;
-  }
+    // base case: target found
+    if (arr[i] == target) {
+        return i;
+    }
 
-  // recursive case: search next element
-  return linearSearch(arr, size, target, i + 1);
+    // recursive case: search next element
+    return linearSearch(arr, size, target, i + 1);
 }
 ```
 
@@ -208,27 +208,127 @@ Both implementations have the same complexity: $O(n)$.
 
 ## Palindrome
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+A palindrome is a word, phrase, number, or other sequences of characters that reads the same forward and backward (ignoring spaces, punctuation, and capitalization). Examples include "radar", "level", "deified", and "A man, a plan, a canal, Panama!".
+
+To determine if a string is a palindrome using recursion, we can compare the first and last characters of the string. If they are the same, we can then check the substring that excludes these two characters. We continue this process until we either find a mismatch or the string becomes empty or has a length of 1, indicating that the original string is a palindrome.
+
+Here's a recursive function written in C to check if a given string is a palindrome:
+
+```c
+bool isPalindrome(char[] str, int start, int end) {
+    // base case: string is empty or has length 1
+    if (start >= end) {
+        return true;
+    }
+
+    // base case: mismatch
+    if (str[start] != str[end]) {
+        return false;
+    }
+
+    // recursive case: check next pair of characters
+    return isPalindrome(str, start + 1, end - 1);
+}
+```
+
+The complexity of this algorithm is $O(n)$ because we are checking each character of the string once. This is similar to the linear search algorithm.
 
 ## Greatest Common Divisor
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+The **greatest common divisor** (GCD) of two integers is the largest positive integer that divides both numbers without a remainder. For example, the GCD of 8 and 12 is 4.
+
+The Euclidean algorithm is a method for computing the GCD of two integers. It works by repeatedly subtracting the smaller number from the larger number until one of the numbers becomes 0. The other number is the GCD.
+
+Here's a recursive function written in C to compute the GCD of two integers:
+
+```c
+int gcd(int num1, int num2) {
+    // base case: num1 == 0
+    if (num1 == 0) {
+        return num2;
+    }
+
+    // recursive case: num1 > 0
+    return gcd(num2 % num1, num1);
+}
+```
+
+The complexity of this algorithm is $O(\log(\min(a, b)))$ because we are dividing the larger number by the smaller number on every recursive call. This is similar to the binary search algorithm.
 
 ## Russian Peasant Multiplication
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+Russian Peasant Multiplication is an ancient algorithm used to multiply two numbers. It uses the properties of doubling and halving to iteratively break down the multiplication problem into simpler steps.
+
+The algorithm works as follows:
+
+1. If the first number is even, halve it and double the second number.
+2. If the first number is odd, add the second number to the result.
+3. Repeat the process until the first number becomes 0.
+
+The recursive implementation provided below follows this method. It checks if the first number `num1` is even or odd. If it's even, it halves `num1` and doubles `num2`. If it's odd, it adds `num2` to the result and then halves num1 and doubles `num2`. The recursion continues until `num1` becomes 0.
+
+The algorithm also handles negative numbers by converting them to positive and adjusting the result accordingly.
+
+```c
+int russianPeasantMultiply(int num1, int num2) {
+    // base case: num1 == 0
+    if (num1 == 0) {
+        return 0; // multiply by 0
+    }
+
+    // recursive case: for negative valued input
+    if (num1 < 0 && num2 < 0) {
+        return russianPeasantMultiply(-num1, -num2); // negate both inputs
+    }
+
+    // recursive case: num1 is negative and num2 is positive
+    if (num1 < 0 && num2 > 0) {
+        return -russianPeasantMultiply(-num1, num2); // negate result
+    }
+
+    // recursive case: num1 is positive and num2 is negative
+    if (num1 > 0 && num2 < 0) {
+        return -russianPeasantMultiply(num1, -num2); // negate result
+    }
+
+    // recursive case: num1 is positive and num2 is positive
+    // if num1 is even, halve it and double num2
+    // if num1 is odd, add num2 to the result and then halve num1 and double num2
+    int result = num1 % 2 == 0 ? russianPeasantMultiply(num1 / 2, num2 * 2) : russianPeasantMultiply(num1 / 2, num2 * 2) + num2;
+    return result;
+}
+```
+
+The complexity of this algorithm is $O(\log n)$ because we are dividing the first number by 2 on every recursive call. This is similar to the binary search algorithm.
 
 ## Printing Numbers in Different Bases
 
-<Callout type="warning">
-  The content of this section is not yet ready. Check back in a few days.
-</Callout>
+Numbers can be represented in various bases, from binary (base 2) to decimal (base 10) and even hexadecimal (base 16). When working with different bases, it's often necessary to convert numbers from one base to another. One way to achieve this is by using a recursive function that breaks down the number into its individual digits in the desired base.
+
+Let's explore a recursive function in C that prints a number in a given base:
+
+```c
+void printNumberToBase(int n, int base) {
+    // Array to translate between number values and digit-characters
+    char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+    // Handle negative numbers
+    if (val < 0) {
+        printf("-");
+        val = -val;  // Convert val to its absolute value
+    }
+
+    // Recursive case: val >= base
+    if (val >= base) {
+        printNumberToBase(val / base, base);
+    }
+
+    // Print the current digit (works for both base case and recursive case)
+    printf("%c", digits[val % base]);
+}
+```
+
+The complexity of this algorithm is $O(\log)$ because we are dividing the number by the base on every recursive call.
 
 ## Further Learning
 
