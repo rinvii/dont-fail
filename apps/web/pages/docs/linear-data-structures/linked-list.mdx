@@ -3,10 +3,862 @@ title: Linked List
 description: Learn about linked lists in C!
 ---
 
-import { Callout } from "nextra-theme-docs";
+import { Callout, Tabs } from "nextra-theme-docs";
 
 # Linked List
 
+After learning about C and pointers, we can now finally learn about one of the most fundamental and versatile data structure: the **linked list**. More specifically, we will be learning about the **singly linked list**.
+
+## Why Linked Lists Over Arrays?
+
+In the C programming language, both arrays and linked lists serve as fundamental tools for storing collections of data. However, there are certain scenarios where linked lists have advantages over arrays.
+
+Let's talk about those advantages:
+
+1. **Dynamic Size:** In C, arrays have a fixed size. Once you declare an array, resizing it requires manual effort, such as allocating a new block of memory, copying over the elements, and then freeing the old block. Linked lists, on the other hand, are inherently dynamic. You can easily grow or shrink them by adding or removing nodes without the need for manual reallocation.
+2. **Insertion and Deletion:** Adding or removing an element in the middle of an array requires shifting elements, which takes $O(n)$ time. owever, with a linked list, if you have a pointer to the node you want to remove or the node before where you want to insert, the operation can be done in constant $O(1)$ time.
+3. **No Wasted Memory:** With arrays in C, you have to estimate the size you'll need in advance, which can lead to wasted memory if you overestimate. With linked lists, you only allocate memory that you use.
+4. **Used by Other Data Structures:** A linked list can be used to implement other data structures, such as a queue and a stack. This flexibility makes linked lists a foundational tool in building more complex data structures in C.
+
+However, linked lists also come with their own set of drawbacks:
+
+1. **Random Access:** Accessing an element in an array by its index is a constant-time operation. In a linked list, you have to traverse the list from the head to the desired node, which takes $O(n)$ time.
+2. **Extra Memory:** Linked lists require extra available memory for storing the pointers to the next node.
+3. **Overhead:** Each element in a linked list requires extra memory for its pointer. This "overhead" refers to the additional memory used by the pointers in each node, which is not directly storing the data. Especially for lists with small data items, this overhead can be significant, leading to more memory usage than a corresponding array.
+4. **Complexity:** Implementing and managing linked lists can be more complex than arrays, especially when dealing with operations like inserting in the middle or reversing the list.
+
+When working in C, the choice between arrays and linked lists depends on the specific requirements of your task. It's essential to understand the strengths and weaknesses of each to make an informed decision.
+
+## What is a Linked List?
+
+Unlike arrays that we learned previously, which are a built-in data structure in C and allocate a contiguous block of memory, linked lists must be manually constructed. Linked lists are made up of individual nodes that are scattered throughout the memory. Each node (in a singly linked list) contains two things: the data and a pointer to the next node in the list.
+
+In C, we typically use a `struct` to represent a node in a linked list. Here's how a node for a singly linked list might be defined:
+
+```c
+struct Node {
+    int data;           // the data stored in the node
+    struct Node *next;  // pointer to the next node
+};
+
+// may also see this:
+
+typedef struct NodeTag Node;
+
+struct NodeTag {
+    int data;
+    Node *next;
+};
+
+// or this:
+
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+```
+
+The `data` field can be any type, such as an `int`, `char`, or even another `struct`. The `next` field is a pointer to the next node in the list. If the node is the last node in the list, the `next` field will be `NULL`.
+
+Let's take a look at a visual representation of a linked list:
+
+![Linked List](/linked-list-example.jpg)
+
 <Callout type="warning">
-  The content of this page is not yet ready. Check back in a few days.
+  Before we continue, it's important to note that prepending and appending to a
+  linked list are two different operations. Prepending is adding a node to the
+  **beginning** (or head) of the list, while appending is adding a node to the
+  **end** (or tail) of the list. Generally appending is the default choice
+  because it's more intuitive. However, this course (CS 305) primarily uses
+  prepending so from now on we will be focusing on that.
 </Callout>
+
+The code for a linked list above is relatively simple. We need to keep track of the head of the list, which is a pointer to the first node. We generally call this the **head pointer**. If the list is empty, the head will be `NULL`. Otherwise, the head will point to the first node in the list.
+
+```c showLineNumbers {17-19}
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int num;
+    struct Node* next;
+} Node;
+
+Node* makeNode(int n, Node* next) {
+    Node* node = malloc(sizeof(Node));
+    node->num = n;
+    node->next = next;
+
+    return node;
+}
+
+int main() {
+    Node* list = makeNode(3, NULL);
+    list = makeNode(2, list);
+    list = makeNode(1, list);
+
+    printf("Linked list contents: ");
+
+    // pointer to the first node in the linked list, our iterator
+    Node* curr = list;
+
+    // iterates through the linked list and prints the node values
+    while (curr != NULL) {
+        printf("%d ", curr->num);
+        curr = curr->next;
+    }
+    // prints the following
+    // Linked list contents: 1 2 3
+
+    // point curr back to the first node
+    curr = list;
+
+    // free the memory for each node
+    while (curr != NULL) {
+        Node* temp = curr;
+        curr = curr->next;
+        free(temp);
+    }
+
+    return 0;
+}
+```
+
+Let's focus on lines 17-19. We first create a node with the value `3` and set the `next` field to `NULL`. Then, we create a node with the value `2` and set the `next` field to point to the node we created previously (the node with the value `3`). Finally, we create a node with the value `1` and set the `next` field to point to the node we created previously (the node with the value `2`). This creates a linked list with the values `1 -> 2 -> 3` as shown in the diagram above.
+
+Some things to note:
+
+- In the diagram, we used `head` to indicate the head pointer. In the code, we used `list` to indicate the head pointer. They are the same thing.
+- We use the `makeNode` function to create a new node. This function takes in the data for the node and a pointer to the next node. It allocates memory for the node, sets the data and next fields, and returns a pointer to the node.
+- We use the `curr` pointer to iterate through the list. We start at the head of the list and traverse the list until we reach the end. We use the `next` field to move to the next node in the list.
+- We also free the memory for each node after we are done with it. This is important because we allocated memory for each node using `malloc`. If we don't free the memory, we will have a memory leak.
+
+In later examples, assume that we are freeing after we are done with the list.
+
+## Singly Linked List Operations
+
+Now that we know how to create a linked list, let's learn how to perform standard operations on it. We will be focusing on the following operations:
+
+- **Getting Length of List:** Getting the number of nodes in the list.
+- **Prepending:** Inserting a node at the head of the list.
+- **Appending:** Inserting a node at the tail of the list.
+- **Inserting:** Inserting a node at a specific index in the list.
+- **Deleting:** Removing a node at a specific index in the list.
+- **Reversing:** Reversing the order of the nodes in the list.
+- **Copying:** Copying the contents of one list to another.
+- **Merging Two Sorted Lists Into One Sorted List:** Merging two sorted lists into one sorted list.
+- **Filtering:** Adding/removing nodes from a list that do not satisfy a condition.
+
+Each of these operations can be implemented in a variety of ways. We will be focusing implementations that are efficient and easy to understand. Specifically, they will be implemented either recursively or iteratively (using loops). Also, we will either be mutating (in-place) the original list or copying a new list.
+
+### Getting Length of List
+
+<Tabs items={["Using Iteration", "Using Recursion"]}>
+    <Tabs.Tab>
+    Iteratively, we can traverse the list and increment a counter until we reach the end of the list.
+
+    Note that we are not modifying the list in any way. In fact, since C passes arguments by value, we are not even modifying the `head` pointer. In this case, the argument `head` is a copy of the original `head` pointer and fortunately, we can modify this copy just as we would any other variable.
+
+    ```c
+    int getLength(Node* head) {
+        int length = 0;
+
+        while (head != NULL) {
+            length++;
+            head = head->next; // point to the next node
+        }
+
+        return length;
+    }
+    ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+    Recursively, we can use the following logic:
+
+    - If the list is empty, return 0. That is, if the pointer is `NULL`, return 0.
+    - Otherwise, return 1 + the length of the rest of the list.
+
+    ```c
+    int getLength(Node* head) {
+        // base case: empty list or end of list
+        if (head == NULL) {
+            return 0;
+        }
+
+        // recursive case: return 1 + length of rest of list
+        return 1 + getLength(head->next);
+    }
+    ```
+
+    This pattern should be similar because we did the same thing when finding the [factorial of a number](/docs/recursion#recursive-case).
+    </Tabs.Tab>
+
+</Tabs>
+
+### Prepending
+
+Inserting at head of a linked list is simple:
+
+1. Create a new node with the data.
+2. Set the `next` field of the new node to point to the current head of the list.
+3. Set the head pointer to point to the new node.
+
+The diagram below shows the steps for prepending the value `4` to the list `1 -> 2 -> 3`. The new list will be `4 -> 1 -> 2 -> 3`.
+
+![Prepending](/insert-head-linked-list-logic.jpg)
+
+The dashed arrow in step 2 indicates that we are setting the `next` field of the new node to point to the current head of the list. The blue solid arrow indicates what it's actually pointing to after the assignment.
+
+<Tabs items={["With Copying", "With Mutating"]}>
+    <Tabs.Tab>
+        ```c
+        int main() {
+            Node* list = makeNode(3, NULL);
+            list = makeNode(2, list);
+            list = makeNode(1, list);
+
+            // simply create a new node and set its next field to the head
+            // then assign the head pointer to the new node
+            list = makeNode(4, list);
+
+            return 0;
+        }
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```c
+        void prepend(Node** head, int n) {
+            // create a new node
+            Node* node = makeNode(n, NULL);
+
+            // set the next field of the new node to point to the current head
+            node->next = *head;
+
+            // set the head pointer to point to the new node
+            *head = node;
+        }
+
+        int main() {
+            Node* list = makeNode(3, NULL);
+            list = makeNode(2, list);
+            list = makeNode(1, list);
+
+            prepend(&list, 4);
+
+            return 0;
+        }
+        ```
+    </Tabs.Tab>
+
+</Tabs>
+
+### Appending
+
+Inserting at the tail of a linked list requires that we traverse the list until we reach the end, then we can insert the new node.
+
+We will add a new node with the value `4` to the list `1 -> 2 -> 3`. The new list will be `1 -> 2 -> 3 -> 4`.
+
+We can do this iteratively or recursively. Also, we will mutate the original list.
+
+<Tabs items={["Using Iteration", "Using Recursion"]}>
+    <Tabs.Tab>
+        ```c
+        void append(Node** head, int n) {
+            // create a new node
+            Node* node = makeNode(n, NULL);
+
+            // if the list is empty, set the head pointer to point to the new node
+            if (*head == NULL) {
+                *head = node;
+
+                return;
+            }
+
+            // traverse the list until we reach the end
+            Node* curr = *head;
+            while (curr->next != NULL) {
+                curr = curr->next;
+            }
+
+            // set the next field of the last node to point to the new node
+            curr->next = node;
+        }
+
+        int main() {
+            Node* list = makeNode(3, NULL);
+            list = makeNode(2, list);
+            list = makeNode(1, list);
+
+            append(&list, 4);
+
+            return 0;
+        }
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```c
+        void append(Node** head, int n) {
+            // base case: empty list
+            if (*head == NULL) {
+                *head = makeNode(n, NULL);
+
+                return;
+            }
+
+            // base case: we reached the last node
+            if ((*head)->next == NULL) {
+                (*head)->next = makeNode(n, NULL);
+
+                return;
+            }
+
+            Node *next = (*head)->next;
+
+            // recursive case: traverse the list until we reach the end
+            append(&next, n);
+        }
+
+        int main() {
+            Node* list = makeNode(3, NULL);
+            list = makeNode(2, list);
+            list = makeNode(1, list);
+
+            append(&list, 4);
+
+            return 0;
+        }
+        ```
+    </Tabs.Tab>
+
+</Tabs>
+
+In this example, we used double pointers to modify the head pointer. Since C passes arguments by value, we need to pass in a pointer to the head pointer so we can modify it. By passing in a pointer to the head pointer, we can dereference it to get the original head pointer and modify it inside the function.
+
+### Inserting
+
+Inserting at a specific index in a linked list is a little more complicated than prepending or appending. But, inserting, prepending, and appending are similar. We can take advantage of this similarity. We will do this iteratively because it's easier to implement.
+
+Given an insertion index $i$, the logic of inserting is as follows:
+
+1. Traverse into the node **before** the insertion point. That is, traverse to the node at index $i - 1$.
+2. Create the new node with the data.
+3. Set the `next` field of the **new node** to point to the node after it. That is, set the `next` field of the **new node** to the node at index $i$.
+4. Set the `next` field of the node before it to point to the **new node**. That is, set the `next` field of the node at index $i - 1$ to the **new node**.
+
+This logic does not apply if the insertion index is 0. In this case, we simply prepend the new node.
+
+The diagram below shows the steps to insert the value `4` at index `2` in the list `1 -> 2 -> 3`. The new list will be `1 -> 2 -> 4 -> 3`.
+
+<div className="mt-6 flex justify-center">
+  ![Inserting](/insert-at-index-linked-list.png)
+</div>
+
+Let's take a look at the code:
+
+```c
+void insert(Node** head, int n, int i) {
+    // create a new node
+    Node* node = makeNode(n, NULL);
+
+    // if the list is empty, set the head pointer to point to the new node
+    if (*head == NULL) {
+        *head = node;
+
+        return;
+    }
+
+    // if the index is 0, prepend the new node
+    if (i == 0) {
+        node->next = *head;
+        *head = node;
+
+        return;
+    }
+
+    // traverse the list until we reach the node before the insertion point
+    Node* curr = *head;
+    for (int j = 0; j < i - 1; j++) {
+        // we reached the end of the list
+        if (curr->next == NULL) {
+            return;
+        }
+
+        curr = curr->next;
+    }
+
+    // set the next field of the new node to point to the node after it
+    node->next = curr->next;
+
+    // set the next field of the node before it to point to the new node
+    curr->next = node;
+}
+```
+
+### Deleting
+
+We are given a data value $n$ and we want to delete the first node in the list that contains that value.
+
+The logic of deleting is as follows:
+
+1. Traverse the list until we find the target node with the value $n$.
+2. Set the `next` field of the node before it to point to the node after it. That is, set the `next` field of the node before the target node to the node after the target node.
+3. Free the memory for the target node.
+
+<Tabs items={["Using Iteration", "Using Recursion"]}>
+    <Tabs.Tab>
+        Compared to recursion, this is a lot easier to understand. We simply traverse the list until we find the target node. Then, we delete it and fix the hole. However, the recursion implementation is very concise, but it's a little more complicated to understand.
+    
+        ```c
+        void delete(Node** head, int n) {
+            // if the list is empty, return
+            if (*head == NULL) {
+                return;
+            }
+
+            // if the head node has the target value, delete it
+            if ((*head)->num == n) {
+                Node* temp = *head; // save the head node
+                *head = (*head)->next; // point the head pointer to the node after the head node
+                free(temp); // free the memory for the head node
+
+                return;
+            }
+
+            // traverse the list until we find the target node
+            Node* curr = *head;
+            while (curr->next != NULL) {
+                // if the next node has the target value, delete it
+                if (curr->next->num == n) {
+                    Node* temp = curr->next; // save the target node
+                    curr->next = curr->next->next; // point to the node after the target node
+                    free(temp);
+
+                    return;
+                }
+
+                curr = curr->next;
+            }
+        }
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        ```c
+        Node *delete(int n, Node *current) {
+            // base case: empty list, we reached the end of the list
+            if (current == NULL) {
+                return NULL;
+            }
+
+            // base case: we found the target node
+            if (current->num == n) {
+                Node *nextNodePtr = current->next;
+                free(current);
+
+                return nextNodePtr;
+            }
+
+            // recursive case: traverse the list until we find the target node
+            current->next = delete(n, current->next);
+            return current;
+        }
+
+        int main() {
+            Node* list = makeNode(3, NULL);
+            list = makeNode(2, list);
+            list = makeNode(1, list);
+
+            list = delete(2, list);
+
+            return 0;
+        }
+        ```
+
+        The code above has a lot of nuance to it. Let's break it down by looking at the call stack:
+
+        Given Linked List: `1 -> 2 -> 3`
+
+        Goal: Delete node with value `2`
+
+        **Call Stack:**
+
+        1. `delete(2, node 1)`
+
+        Execution:
+
+        1. The function checks if `node 1` has the value `2`. It doesn't.
+        2. The function makes a recursive call to the next node
+
+        ```c
+        current->next = delete(2, node 2);
+        ```
+
+        **Call Stack:**
+
+        1. `delete(2, node 1)`
+        2. `delete(2, node 2)`
+
+        Execution:
+
+        1. The function checks if `node 2` has the value `2`. It does.
+        2. The function deletes `node 2` and returns `node 3`.
+
+        ```c
+        return nextNodePtr; // which is node 3
+        ```
+
+        **Call Stack:** (after returning)
+
+        1. `delete(2, node 1)`
+
+        Execution:
+
+        1. The function updates the `next` pointer of `node 1` to point to `node 3`, thereby removing `node 2` from the list.
+        2. The function returns `node 1`.
+
+        ```c
+        current->next = delete(2, node 2);
+        return current; // which is node 1
+        ```
+
+        End Result: `1 -> 3`
+
+        Throughout this process, the call stack keeps track of the function's state at each level of recursion. When the target node is found and deleted, the stack unwinds, updating pointers and returning the modified list.
+    </Tabs.Tab>
+
+</Tabs>
+
+### Reversing
+
+Reversing a linked list is a classic problem that can be approached in various ways. The goal is to change the direction of the next pointers so that the last node becomes the first, the second-to-last becomes the second, and so on, until the first node becomes the last.
+
+Here's the step-by-step process:
+
+1. Initialize three pointers: `prev` to `NULL`, `current` to the head of the list, and `next` to `NULL`.
+2. Traverse the list. At each step:
+   - Store the next node in the pointer `next`.
+   - Change the `current` pointer's next to point to `prev`.
+   - Move `prev` to `current` and `current` to `next`.
+3. Once the traversal is complete, set the head of the list to `prev` because the last node is now the first node.
+
+<Tabs items={["With Copying", "With Mutating"]}>
+    <Tabs.Tab>
+        In the copying approach, we create a new linked list that is the reverse of the original, without altering the original list. This ensures that the original list remains unchanged.
+
+        ```c
+        Node* reverseCopy(Node* head) {
+            Node* newHead = NULL;  // this will be the head of the reversed list
+            Node* current = head;  // pointer to traverse the original list
+
+            while (current != NULL) {
+                // create a new node with the current data and prepend it to the new list
+                Node* newNode = makeNode(current->num, newHead);
+                newHead = newNode;
+
+                // move to the next node in the original list
+                current = current->next;
+            }
+
+            return newHead;  // return the head of the reversed list
+        }
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        In the mutation approach, we modify the original linked list in place to reverse its direction. This means that the original list is changed, and we don't use additional memory proportional to the size of the list.
+
+        ```c
+        Node* reverseMutation(Node* head) {
+            Node* prev = NULL;
+            Node* current = head;
+            Node* next = NULL;
+
+            while (current != NULL) {
+                next = current->next;  // store the next node
+                current->next = prev;  // reverse the current node's pointer
+                prev = current;        // store the current node into prev for the next iteration
+                current = next;        // move to the next node
+            }
+
+            head = prev;  // set the head to the last node in the original list
+            return head;
+        }
+        ```
+
+        Alternatively, it can return nothing. In the code below, only two lines and the absence of a return statement are different from the code above.
+
+        ```c {3,13}
+        void reverseMutation(Node** head) {
+            Node* prev = NULL;
+            Node* current = *head;
+            Node* next = NULL;
+
+            while (current != NULL) {
+                next = current->next;  // store the next node
+                current->next = prev;  // reverse the current node's pointer
+                prev = current;        // store the current node into prev for the next iteration
+                current = next;        // move to the next node
+            }
+
+            *head = prev;  // set the head to the last node in the original list
+        }
+        ```
+    </Tabs.Tab>
+
+    The diagram below shows the steps to reverse the list `1 -> 2 -> 3`. The new list will be `3 -> 2 -> 1`.
+
+    Follow the steps and their corresponding colors to see how the pointers change.
+
+    Briefly, first we store the next node in the pointer `next` by assigning it `current->next`. Secondly, we reverse node by assigning `current->next` to `prev`. Finally, we assign `prev` to `current` and `current` to `next` to move to the next node.
+
+    <div className="mt-6 flex justify-center">
+        ![Reversing](/reverse-linked-list.jpg)
+    </div>
+
+</Tabs>
+
+### Copying
+
+Copying a linked list involves creating a new linked list that contains the same data as the original list but occupies a different memory location. This ensures that the original list remains unchanged, and any modifications to the copied list do not affect the original list.
+
+Here's the step-by-step process:
+
+1. Initialize a new head pointer for the copied list as `NULL`.
+2. Traverse the original list.
+3. For each node in the original list, create a new node with the same data and append it to the copied list.
+4. Return the head of the copied list.
+
+<Tabs items={["Using Iteration", "Using Recursion"]}>
+    <Tabs.Tab>
+        Iteratively, we can traverse the original list and for each node, create a new node with the same data and append it to the copied list.
+
+        ```c
+        Node* copyList(Node* head) {
+            if (head == NULL) {
+                return NULL;  // return NULL if the original list is empty
+            }
+
+            Node* newHead = makeNode(head->num, NULL);  // create the head of the copied list
+            Node* current = head->next;  // pointer to traverse the original list
+            Node* newCurrent = newHead;  // pointer to traverse the copied list
+
+            while (current != NULL) {
+                Node* newNode = makeNode(current->num, NULL);  // create a new node with the current data
+                newCurrent->next = newNode;  // append the new node to the copied list
+                newCurrent = newNode;  // move to the new node in the copied list
+
+                current = current->next;  // move to the next node in the original list
+            }
+
+            return newHead;  // return the head of the copied list
+        }
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        Recursively, we can use the following logic:
+
+        - If the original list is empty, return `NULL`.
+        - Otherwise, create a new node with the current data and set its `next` field to the result of the recursive call with the next node in the original list.
+
+        ```c
+        Node* copyList(Node* head) {
+            // base case: empty list or end of list
+            if (head == NULL) {
+                return NULL;
+            }
+
+            // recursive case: create a new node with the current data and set its next field to the result of the recursive call
+            Node* newNode = makeNode(head->num, copyList(head->next));
+            return newNode;
+        }
+        ```
+
+        This recursive approach is concise and elegant, but it's important to understand that it uses the call stack to keep track of the nodes in the original list. As the recursion unwinds, new nodes are created and linked together to form the copied list.
+    </Tabs.Tab>
+
+</Tabs>
+
+### Merging Two Sorted Lists Into One Sorted List
+
+Merging two linked lists involves combining the contents of two lists into a target list. This operation can be done either by copying the contents of both lists into a new list or by mutating both of the lists in place. Here, we'll focus on the mutation approach. We'll also use recursion because it's easier to implement.
+
+The one caveat is that the target list must be sorted just as the two lists are.
+
+```c
+Node *merge(Node *list1, Node *list2) {
+    // base case: if first list is empty, return the second list
+    if (list1 == NULL) {
+        return list2;
+    }
+
+    // base case: if second list is empty, return the first list
+    if (list2 == NULL) {
+        return list1;
+    }
+
+    // recursive case
+    if (list1->num <= list2->num) {
+        // if the first list's current node is smaller, append it to the result of the recursive call
+        list1->next = merge(list1->next, list2);
+        return list1;
+    } else {
+        // if the second list's current node is smaller, append it to the result of the recursive call
+        list2->next = merge(list1, list2->next);
+        return list2;
+    }
+}
+```
+
+### Filtering
+
+Filtering a linked list involves removing nodes that do not satisfy a certain condition. This operation can be done either by copying the original list and excluding nodes that don't meet the condition or by mutating the original list in place. Here, we'll focus on the mutation approach.
+
+Filtering
+Filtering a linked list involves removing nodes that do not satisfy a certain condition. This operation can be done either by copying the original list and excluding nodes that don't meet the condition or by mutating the original list in place. Here, we'll focus on the mutation approach.
+
+The goal of filtering is to traverse the list and remove nodes that don't meet a specific condition. The condition can be represented as a function that takes a node's data as an argument and returns a boolean value (`true` if the node should be deleted, `false` if it should be kept).
+
+<Tabs items={["Using Iteration", "Using Recursion"]}>
+
+    <Tabs.Tab>
+
+        Here's the step-by-step process for filtering with iteration:
+
+        1. Initialize a pointer `prev` to `NULL` and `current` to the head of the list.
+        2. Traverse the list. At each step:
+            - If the current node should be deleted
+                - If `prev` is `NULL`, it means the current node is the head of the list. Update the head pointer to point to the next node.
+                - Otherwise, update the `next` pointer of the `prev` node to skip the current node.
+                - Free the memory of the current node.
+            - If the current node's data meets the condition, update `prev` to point to the current node.
+            - Move to the next node.
+
+        ```c
+        void filter(Node** head) {
+            Node* prev = NULL;
+            Node* current = *head;
+            bool deleteFlag = false;
+
+            while (current != NULL) {
+                if (deleteFlag) {        // if node should be deleted
+                    if (prev == NULL) {  // if the current node is the head
+                        *head = current->next;
+                    } else {
+                        prev->next = current->next;
+                    }
+
+                    Node* temp = current;    // save the current node
+                    current = current->next; // move to the next node
+                    free(temp);              // free the saved node
+                } else {
+                    prev = current;
+                    current = current->next;
+                }
+                deleteFlag = !deleteFlag;
+            }
+        }
+        ```
+    </Tabs.Tab>
+
+    <Tabs.Tab>
+        Here's the step-by-step process for filtering with recursion:
+
+        1. If the current node is `NULL`, return.
+        2. If the current node should be deleted
+            - Update the head pointer to point to the next node.
+            - Free the memory of the current node.
+            - Make a recursive call with the updated head pointer.
+        3. Otherwise, make a recursive call with the next node.
+
+        In the example below, we use a static variable `deleteFlag` to keep track of whether the current node should be deleted. This variable is initialized to `false` and is toggled at each recursive call.
+
+        ```c
+        void filterRecursive(Node** head) {
+            if (*head == NULL) {
+                return;
+            }
+
+            static bool deleteFlag = false;
+
+            if (deleteFlag) {
+                Node* temp = *head;         // save the current node
+                *head = (*head)->next;      // this is the same as, for example, node1->next = node2->next, effectively skipping node2
+                free(temp);
+                deleteFlag = !deleteFlag;
+                filterRecursive(head);      // recursive call to the next node
+            } else {
+                deleteFlag = !deleteFlag;
+                filterRecursive(&((*head)->next));  // recursive call to the next node
+            }
+        }
+        ```
+    </Tabs.Tab>
+
+</Tabs>
+
+Alternatively, we can add nodes that meet the condition to a new list and return the head of the new list. This approach is similar to the filter deletion approach but instead of deleting nodes, we append nodes that meet the condition to a new list.
+
+For the following examples, we'll split a list into two lists by moving every even node to a new list and every odd node to the original list. By even, I refer to the index of the node, not the value of the node. And, once again we'll be mutating the original list. We will also prepend to the new list for simplicity.
+
+<Tabs items={["Using Iteration", "Using Recursion"]}>
+
+    <Tabs.Tab>
+        Let's take a look at the iterative approach:
+
+        ```c
+        Node* filter(Node** head) {
+            Node* newHead = NULL;  // head of the new list
+            Node* current = *head;
+            Node* prev = NULL;
+            bool deleteFlag = false;
+
+            while (current != NULL) {
+                if (current == *head) {  // if the current node is the head
+                    *head = current->next;
+                } else {
+                    prev->next = current->next;
+                }
+
+                if (deleteFlag) {  // if the current node should be deleted
+                    // same as prepending to the new list
+                    current->next = newHead;
+                    newHead = current;
+                } else {
+                    prev = current;
+                }
+
+                current = current->next;
+            }
+
+            return newHead;
+        }
+        ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+        Here's the recursive approach:
+
+        ```c
+        Node* filterRecursive(Node** head) {
+            if (*head == NULL) {
+                return NULL;
+            }
+
+            static Node *newHead = NULL;  // head of the new list
+            static bool deleteFlag = false;
+
+            if (deleteFlag) {  // if the current node should be deleted
+                Node* temp = *head;  // save the current node
+                *head = (*head)->next;
+                temp->next = newHead;  // same as prepending to the new list
+                newHead = temp;
+                deleteFlag = !deleteFlag;
+                filterRecursive(head);  // recursive call to the next node
+            } else {
+                deleteFlag = !deleteFlag;
+                filterRecursive(&((*head)->next));  // recursive call to the next node
+            }
+
+            return newHead;
+        }
+        ```
+    </Tabs.Tab>
+
+</Tabs>
