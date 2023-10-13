@@ -10,3 +10,51 @@ import { Callout } from "nextra-theme-docs";
 <Callout type="warning">
   The content of this page is not yet ready. Check back in a few days.
 </Callout>
+
+{/* A doubly linked list is a data structure that is similar to a linked list, but each node has a pointer to the previous node as well as the next node. This allows for traversal in both directions.
+
+Using a `struct` to represent a node, we can define a doubly linked list as follows:
+
+```c
+typedef struct Node {
+    int data;
+    struct Node *next;
+    struct Node *prev;
+} Node;
+```
+
+Compared to a singly linked list, we have added a `prev` pointer to the `struct`. This pointer will point to the previous node in the list.
+
+Let's define a function to create a new node:
+
+```c
+Node *newNode(int data) {
+    Node *node = malloc(sizeof(Node));
+    node->data = data;
+    node->prev = NULL;
+    node->next = NULL;
+
+    return node;
+}
+```
+
+This function takes in the data to be stored in the node, as well as pointers to the next and previous nodes. It allocates memory for the node, sets the data, and sets the pointers. It then returns the node.
+
+We can now start building our doubly linked list:
+
+```c
+int main() {
+    Node *head = newNode(1);
+    Node *second = newNode(2);
+    Node *third = newNode(3);
+
+    head->next = second;
+    second->prev = head;
+    second->next = third;
+    third->prev = second;
+
+    // 1 <-> 2 <-> 3
+
+    return 0;
+}
+``` */}
