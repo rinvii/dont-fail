@@ -1,6 +1,7 @@
 {
   "stack": "Stack",
   "queue": "Queue",
+  "tree": "Tree",
   "scopes": {
     "display": "hidden"
   }

@@ -1,0 +1,319 @@
+---
+title: Tree
+description: Learn about trees in C!
+---
+
+import { Callout, Tabs } from "nextra-theme-docs";
+
+# Tree
+
+A tree is a data structure that has a finite set of nodes such that there is a root node. Any remaining nodes are partitioned into $n$ (possibly empty) sets $T_1$, $T_2$, $\ldots$, $T_n$, where each of these sets is a tree. The sets $T_1$, $T_2$, $\ldots$, $T_n$ are called the subtrees of the root.
+
+Here is an example of a tree:
+
+![Tree](/tree-example.jpg)
+
+## Terminology
+
+Using the example above, let's define some terminology.
+
+- **Root**: The root is the topmost node in the tree. The only node which has no parent. In the example above, the root is 1.
+- **Degree**: The degree of a node is the number of child nodes it has. In the example above, the degree of node 1 is 3.
+- **Parent**: A node conceptually closer to the root node is called a parent node. In the example above, the parent of node 2 is node 1.
+- **Child**: A tree node that follows after a parent node is called a child node. In the example above, the children of node 1 are nodes 2, 3, and 4
+- **Sibling**: Nodes that share the same parent are called siblings. In the example above, nodes 2, 3, and 4 are siblings.
+- **Leaf**: Also called a terminal node, a leaf is a node with a degree of 0 (no children). In the example above, 5, 6, 3, 8, 9, and 10 are leaves.
+- **Weight of a tree**: The weight of a tree is the number of leaves. In the example above, the weight of the tree is 6.
+- **Level**: Also called depth, the level of a node is the number of edges on the path from the root node to that node. In the example above, the level of node 1 is 0, the level of nodes 2, 3, and 4 is 1. The level of nodes 8, 9, and 10 are 3.
+- **Height**: The height of a tree is the maximum level of any node in the tree plus one. In the example above, the height of the tree is 4.
+- **Descendant**: A node $v$ is a descendant of a node $u$ if there is a path from $u$ to $v$ in the tree. In the example above, node 10 is a descendant of node 1.
+- **Ancestor**: A node $u$ is an ancestor of a node $v$ if there is a path from $u$ to $v$ in the tree. In the example above, node 1 is an ancestor of node 10.
+
+## Traversals (preorder, inorder, postorder)
+
+There are three ways to traverse a tree: preorder, inorder, and postorder. The difference between these three traversals is the order in which the nodes are visited.
+
+Suppose we have the following tree:
+
+![Tree](/tree-example-2.jpg)
+
+### Preorder
+
+In preorder traversal:
+
+1. Visit the root node
+2. Traverse the left subtree
+3. Traverse the right subtree
+
+In the example above, the preorder traversal is **1, 2, 4, 8, 5, 3, 6, 7, 9, and 10.**
+
+### Inorder
+
+In inorder traversal:
+
+1. Traverse the left subtree
+2. Visit the root node
+3. Traverse the right subtree
+
+In the example above, the inorder traversal is **4, 8, 2, 5, 1, 6, 3, 9, 7, 10.**
+
+### Postorder
+
+In postorder traversal:
+
+1. Traverse the left subtree
+2. Traverse the right subtree
+3. Visit the root node
+
+In the example above, the postorder traversal is **8, 4, 5, 2, 6, 9, 10, 7, 3, 1.**
+
+### Useful Properties of Traversals
+
+Some of you may recognize some noteworthy properties of these traversals.
+
+Let's jot down some observations:
+
+- The first node visited in **preorder traversal** is always root node.
+- The last node visited in **postorder traversal** is always root node.
+- In **inorder traversal**, the left-most nnode is always visited first and the right-most node is always visited last.
+- In **inorder traversal**, the root node is always visited in between the left and right subtrees. So in the example above, it makes sense that to the left of 1 is 4, 8, 2, and 5. To the right of 1 is 6, 3, 9, 7, and 10.
+
+## Binary Search Trees
+
+Trees can have any number of children. However, for this section, we are going to focus on binary trees. Generally, a binary tree is a tree where each node has at most two children. In particular, we are interested in a special type of binary tree called a binary search tree.
+
+<Callout>
+  A binary search tree is a binary tree where the left subtree of a node
+  contains only nodes with keys smaller than the node's key, and the right
+  subtree of a node contains only nodes with keys greater than the node's key.
+</Callout>
+
+Here is an example of a binary search tree with keys inserted in the following order: 8, 3, 10, 1, 6, 14, 4, 7, and 13.
+
+![Binary Search Tree](/binary-search-tree-example.jpg)
+
+Notice that for each node, the left subtree contains only nodes with keys smaller than the node's key, and the right subtree contains only nodes with keys greater than the node's key.
+
+Let's define our binary search tree node:
+
+```c
+typedef struct Node {
+  int key;
+  struct Node *left;
+  struct Node *right;
+} Node;
+```
+
+We will use this definition in the following examples.
+
+## Binary Search Tree Operations
+
+We will now discuss the operations that can be performed on a binary search tree.
+
+### Insertion
+
+To insert a node into a binary search tree, starting at the root node, we compare the key of the node that we're at with the key of the node we want to insert. If the node to be inserted has a smaller key, we go to the left subtree. If the node to be inserted has a larger key, we go to the right subtree. We continue this process until we reach a leaf node. At this point, we insert the node as a child of the leaf node.
+
+For example, since our keys primarily consist of integers, we can simply compare the keys using the comparison operators:
+
+```c
+Node *insert(Node *root, int key) {
+  if (root == NULL) {
+    root = malloc(sizeof(Node));
+    root->key = key;
+    root->left = NULL;
+    root->right = NULL;
+  } else if (key < root->key) {
+    root->left = insert(root->left, key);
+  } else {
+    root->right = insert(root->right, key);
+  }
+
+  return root;
+}
+```
+
+### Deletion
+
+To delete a node from a binary search tree, we first search for the node to be deleted. Then we consider three cases:
+
+1. The node to be deleted is a leaf node. In this case, we simply delete the node.
+2. The node to be deleted has one child. In this case, we replace the node with its child.
+3. The node to be deleted has two children. In this case, we replace the node with the smallest node in the right subtree.
+
+```c
+Node *delete(Node *root, int key) {
+  if (root == NULL) {
+    return NULL;
+  } else if (key < root->key) {
+    root->left = delete(root->left, key);
+  } else if (key > root->key) {
+    root->right = delete(root->right, key);
+  } else {
+    if (root->left == NULL && root->right == NULL) { // if we are a leaf node
+      free(root);
+      root = NULL;
+    } else if (root->left == NULL) { // if we have one child
+      Node *temp = root;
+      root = root->right;
+      free(temp);
+    } else if (root->right == NULL) { // if we have one child
+      Node *temp = root;
+      root = root->left;
+      free(temp);
+    } else { // if we have two children
+      Node *temp = findMin(root->right); // find the smallest node in the right subtree
+      root->key = temp->key;
+      root->right = delete(root->right, temp->key);
+    }
+  }
+
+  return root;
+}
+```
+
+### Find Minimum
+
+In the previous section, we used a function called `findMin` to find the smallest node in the right subtree. Here is the implementation of that function:
+
+```c
+Node *findMin(Node *root) {
+  if (root == NULL || root->left == NULL) {
+    return root;
+  }
+
+  return findMin(root->left);
+}
+```
+
+### Find Maximum
+
+Similarly, we can find the largest node in the left subtree using the `findMax` function:
+
+```c
+Node *findMax(Node *root) {
+  if (root == NULL || root->right == NULL) {
+    return root;
+  }
+
+  return findMax(root->right);
+}
+```
+
+### Find Key
+
+We found the minimum and maximum keys in the previous section. Let's find the node with a given key using the `findKey` function:
+
+```c
+Node *findKey(Node *root, int key) {
+  if (root == NULL || root->key == key) {
+    return root;
+  } else if (key < root->key) {
+    return findKey(root->left, key);
+  } else {
+    return findKey(root->right, key);
+  }
+}
+```
+
+### Height of a BST
+
+The height of a binary search tree is the maximum level of any node in the tree plus one.
+
+```c
+int height(Node *root) {
+  if (root == NULL) {
+    return -1;
+  }
+
+  int leftHeight = height(root->left);
+  int rightHeight = height(root->right);
+
+  int max = leftHeight > rightHeight ? leftHeight : rightHeight;
+
+  return 1 + max;
+}
+```
+
+### Number of Nodes
+
+The number of nodes in a binary search tree is the number of nodes in the left subtree plus the number of nodes in the right subtree plus one.
+
+```c
+
+int numNodes(Node *root) {
+  if (root == NULL) {
+    return 0;
+  }
+
+  return 1 + numNodes(root->left) + numNodes(root->right);
+}
+```
+
+### Check if a BST is Balanced
+
+A binary search tree is balanced if the height of the left subtree and the height of the right subtree differ by at most one.
+
+```c
+int isBalanced(Node *root) {
+  if (root == NULL) {
+    return 1;
+  }
+
+  int leftHeight = height(root->left);
+  int rightHeight = height(root->right);
+
+  if (abs(leftHeight - rightHeight) <= 1 && isBalanced(root->left) && isBalanced(root->right)) {
+    return 1;
+  }
+
+  return 0;
+}
+```
+
+### Number of Internal Nodes
+
+The number of internal nodes in a binary search tree is the number of nodes in the left subtree plus the number of nodes in the right subtree.
+
+```c
+int numInternalNodes(Node *root) {
+  if (root == NULL || (root->left == NULL && root->right == NULL)) {
+    return 0;
+  }
+
+  return 1 + numInternalNodes(root->left) + numInternalNodes(root->right);
+}
+```
+
+### Number of Leaf Nodes
+
+The number of leaf nodes in a binary search tree is the number of nodes in the left subtree plus the number of nodes in the right subtree.
+
+```c
+int numLeafNodes(Node *root) {
+  if (root == NULL) {
+    return 0;
+  } else if (root->left == NULL && root->right == NULL) {
+    return 1;
+  }
+
+  return numLeafNodes(root->left) + numLeafNodes(root->right);
+}
+```
+
+### Number of Fully Filled Nodes
+
+The number of fully filled nodes in a binary search tree is the number of nodes in the left subtree plus the number of nodes in the right subtree.
+
+```c
+
+int numFullyFilledNodes(Node *root) {
+  if (root == NULL || (root->left == NULL && root->right == NULL)) {
+    return 0;
+  } else if (root->left != NULL && root->right != NULL) {
+    return 1 + numFullyFilledNodes(root->left) + numFullyFilledNodes(root->right);
+  }
+
+  return numFullyFilledNodes(root->left) + numFullyFilledNodes(root->right);
+}
+```

@@ -1,0 +1,137 @@
+---
+title: Sorting Algorithms
+description: Learn about sorting algorithms and how they work.
+---
+
+import { Callout, Tabs } from "nextra-theme-docs";
+
+# Sorting Algorithms
+
+In this section, we will cover the most common sorting algorithms and how they work. We will also discuss their complexities and how the input sizes affect the best, average, and worst case run times.
+
+Before we begin, let's quickly identify the complexities and their run times considering the input size `n` of four different sorting algorithms:
+
+- **Selection Sort**: `O(n^2)` for all cases.
+- **Insertion Sort**: `O(n^2)` for all cases.
+- **Quick Sort**: `O(n log n)` for best and average cases, `O(n^2)` for worst case.
+- **Merge Sort**: `O(n log n)` for all cases.
+
+## Selection Sort
+
+Selection sort is a simple sorting algorithm that works by repeatedly finding the minimum element from the unsorted part of the array and putting it at the beginning. The algorithm maintains two subarrays in a given array:
+
+1. The subarray which is already sorted.
+2. Remaining subarray which is unsorted.
+
+In every iteration of selection sort, the minimum element from the unsorted subarray is picked and moved to the sorted subarray.
+
+<div className="my-2 flex justify-center">
+  ![Selection Sort](/selection-sort.gif)
+</div>
+
+In the above animation, we can see that the algorithm is sorting the array by repeatedly finding the minimum element from the unsorted subarray (indicated by the blue iteration). Then, it swaps the minimum element into the sorted subarray (indicated by the green iteration).
+
+Pseduo-code for selection sort:
+
+```
+selectionSort(array, size)
+  for i = 0 to size - 1
+    min = i
+    for j = i + 1 to size
+      if array[j] < array[min]
+        min = j
+    swap(array[min], array[i])
+```
+
+In steps:
+
+1. Set `i` to `0`.
+2. Set `min` to `i`. This is the index of the minimum element in the unsorted subarray.
+3. Set `j` to `i + 1`.
+4. If `array[j] < array[min]`, set `min` to `j`.
+5. Increment `j` by `1`.
+6. Repeat steps 4 and 5 until `j` is greater than the size of the array.
+7. Swap `array[min]` with `array[i]`.
+8. Increment `i` by `1`.
+9. Repeat steps 2 through 8 until `i` is greater than the size of the array.
+
+Notice that we have two jump statements that go back to a previous step until we reach a condition. This is the loop and it represents the subarrays in the algorithm. The outer loop represents the sorted subarray and the inner loop represents the unsorted subarray.
+
+Actual implementation of selection sort:
+
+```c
+void selectionSort(int array[], int size) {
+  int i, j, min, temp;
+
+  for (i = 0; i < size - 1; i++) {
+    min = i;
+
+    for (j = i + 1; j < size; j++) {
+      if (array[j] < array[min]) {
+        min = j;
+      }
+    }
+
+    temp = array[min];
+    array[min] = array[i];
+    array[i] = temp;
+  }
+}
+```
+
+### Insertion Sort
+
+Insertion sort is a simple sorting algorithm that works by repeatedly inserting an element from the unsorted subarray of the array into the sorted subarray of the array.
+
+<div className="my-2 flex justify-center">
+  ![Insertion Sort](/insertion-sort.gif)
+</div>
+
+Pseduo-code for insertion sort:
+
+```
+insertionSort(array, size)
+  for i = 1 to size - 1
+    key = array[i]
+    j = i - 1
+    while j >= 0 and array[j] > key
+      array[j + 1] = array[j]
+      j = j - 1
+    array[j + 1] = key
+```
+
+In steps:
+
+1. Set `i` to `1`.
+2. Set `key` to `array[i]`. This is the element we want to insert into the sorted subarray.
+3. Set `j` to `i - 1`.
+4. If `j >= 0` and `array[j] > key`, set `array[j + 1]` to `array[j]`. In other words, while `j` is greater than or equal to `0` and the element at `array[j]` is greater than `key`, shift the element at `array[j]` to the right.
+5. Decrement `j` by `1`.
+6. Repeat steps 4 and 5 until `j` is less than `0` or the element at `array[j]` is less than or equal to `key`.
+7. Set `array[j + 1]` to `key`.
+8. Increment `i` by `1`.
+9. Repeat steps 2 through 8 until `i` is greater than the size of the array.
+
+Actual implementation of insertion sort:
+
+```c
+void insertionSort(int array[], int size) {
+  int i, j, key;
+
+  for (i = 1; i < size; i++) {
+    key = array[i];
+    j = i - 1;
+
+    while (j >= 0 && array[j] > key) {
+      array[j + 1] = array[j];
+      j = j - 1;
+    }
+
+    array[j + 1] = key;
+  }
+}
+```
+
+### Quick Sort
+
+Quick sort is a divide and conquer algorithm that works by picking an element as a pivot and partitioning the array around the pivot. There are many different ways to pick a pivot, but we will use the first element in the array as the pivot.

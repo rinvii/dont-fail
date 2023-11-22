@@ -3,10 +3,438 @@ title: Stack
 description: Learn about stacks in C!
 ---
 
-import { Callout } from "nextra-theme-docs";
+import { Callout, Tabs } from "nextra-theme-docs";
 
 # Stack
 
-<Callout type="warning">
-  The content of this page is not yet ready. Check back in a few days.
-</Callout>
+A **stack** is a data structure that follows the Last In First Out (LIFO) principle. This means that only the most recently added items can be removed. The item that is added last is referred to as the **top**. A more intuitive way to think about this is to imagine a stack of books where you add or remove books from the top.
+
+## Stack Definition
+
+We will explore the stack data definition using two different implementations: arrays and linked lists.
+
+<Tabs items={["Array", "Linked List"]}>
+  <Tabs.Tab>
+    This course defines the stack array implementation as follows:
+
+    ```c
+    typedef struct {
+      int top;
+      int items[MAX_STACK_SIZE];
+    } Stack;
+    ```
+
+    The stack is defined as a struct with two members: `top` and `items`. The `top` field is an integer that represents the index of the top item in the stack. The `items` field is an array of integers that stores the items in the stack. It doesn't have to be an array of integers, it can be an array of any type.
+
+    <Callout>
+      Typically, the `top` field is initialized to `-1` to indicate that the stack is empty.
+    </Callout>
+
+    Notice that the `items` field is defined as an array of size `MAX_STACK_SIZE`. This is the maximum number of items that can be stored in the stack.
+
+    Consider the diagram below which shows a stack with 5 items. The `top` field is `4` because the top item is at index `4` in the `items` array.
+
+    ![Stack Array Diagram](/stack-array-diagram.jpg)
+
+    <Callout>
+      The biggest drawback of the array implementation is that the size of the stack is fixed. This means that the stack can only store a maximum of `MAX_STACK_SIZE` items.
+    </Callout>
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    The stack linked list implementation is defined as follows:
+
+    ```c
+    typedef struct Node {
+      int number;
+      struct Node *next;
+    } Node;
+
+    typedef struct {
+      Node *top;
+    } Stack;
+    ```
+
+    Using a linked list node to represent each item in the stack, the stack is defined as a struct with a single member: `top`. The `top` field is a pointer to the top item in the stack.
+
+    <Callout>
+      In the stack linked list implementation, the `top` field is initialized to `NULL` to indicate that the stack is empty. Furthermore, the top pointer is always pointing to the head of the linked list.
+    </Callout>
+
+    The reason why the top pointer is always pointing to the head of the linked list is because its easier to add and remove items from the head of a linked list than from the tail. Note that the head of the linked list is the first node while the tail is the last node.
+
+    If the top pointer was pointing to the tail of the linked list, then adding and removing items would be more difficult because we would have to traverse the entire linked list to get to the tail while also keeping track of the previous node before the tail.
+
+    Consider the diagram below which shows a stack with 5 items. The `top` pointer is pointing to the head of the linked list.
+
+    ![Stack Linked List Diagram](/stack-linked-list-diagram.jpg)
+
+    <Callout>
+      Notice in the diagram above, values are represented in the reverse order from the stack array implementation. This should make sense because the top of the stack is the head of the linked list.
+    </Callout>
+
+  </Tabs.Tab>
+</Tabs>
+
+## Stack Operations
+
+In this section, we'll discuss the implementation of the stack operations for both the array and linked list implementations.
+
+We will use their corresponding definitions from the previous section.
+
+Stacks support two primary operations:
+
+- **Push**: Add an item to the top of the stack
+- **Pop**: Remove the top item from the stack
+
+Additionally, stacks often provide the following operations:
+
+- **initStack**: Initialize a stack. The implementation of this operation will vary depending on the underlying data structure used to implement the stack which are arrays and linked lists.
+- **Peek**: Access the top item without removing it.
+- **isEmpty**: Check if the stack is empty.
+- **freeStack**: Remove all items from the stack. This is a combination of pop and isEmpty.
+
+Stacks can be implemented using either arrays or linked lists. We'll take a look at both implementations side by side to see the similarities and differences.
+
+### Initializing a Stack
+
+Both implementations use manual memory allocation to initialize the stack. This means that the stack is allocated on the heap using the `malloc` function. Thus, we must also free the stack when we are done using it.
+
+<Tabs items={["Array", "Linked List"]}>
+  <Tabs.Tab>
+    In the array implementation, the stack can be initialized using a function `initStack` which returns a manually allocated stack with the `top` field initialized to `-1`.
+
+    ```c
+    Stack* initStack() {
+      Stack *stack = malloc(sizeof(Stack));
+      stack->top = -1;
+      return stack;
+    }
+    ```
+
+    The stack can then be initialized as follows:
+
+    ```c
+    Stack *stack = initStack();
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    In the linked list implementation, we can initialize the stack by setting the `top` field to `NULL`. This indicates that the stack is empty. Note that the `top` field is a pointer to the head of the linked list.
+
+    ```c
+    Stack* initStack() {
+      Stack *stack = malloc(sizeof(Stack));
+      stack->top = NULL;
+      return stack;
+    }
+    ```
+
+    The stack can be initialized as follows:
+
+    ```c
+    Stack *stack = initStack();
+    ```
+
+  </Tabs.Tab>
+</Tabs>
+
+### Check if Stack is Empty
+
+Checking if the stack is empty is a common operation that is used to prevent errors when popping items from the stack. If the stack is empty, then we cannot pop an item from the stack. Both implementations are very similar.
+
+<Tabs items={["Array", "Linked List"]}>
+  <Tabs.Tab>
+    In the array implementation, we can check if the stack is empty by checking if the `top` field is equal to `-1`. We return `1` if the stack is empty and `0` otherwise.
+
+    ```c
+    int isEmpty(Stack *stack) {
+      return stack->top == -1;
+    }
+    ```
+
+    The example below checks if a stack is empty:
+
+    ```c
+    Stack *stack = initStack();
+
+    if (isEmpty(stack)) {
+      printf("Stack is empty\n"); // prints "Stack is empty"
+    } else {
+      printf("Stack is not empty\n");
+    }
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    In the linked list implementation, we can check if the stack is empty by checking if the `top` field is equal to `NULL`. We return `1` if the stack is empty and `0` otherwise.
+
+    ```c
+    int isEmpty(Stack *stack) {
+      return stack->top == NULL;
+    }
+    ```
+
+    The example below checks if a stack is empty:
+
+    ```c
+    Stack *stack = initStack();
+
+    if (isEmpty(stack)) {
+      printf("Stack is empty\n"); // prints "Stack is empty"
+    } else {
+      printf("Stack is not empty\n");
+    }
+    ```
+
+  </Tabs.Tab>
+</Tabs>
+
+### Pushing an Item to the Stack
+
+Pushing an item is the same as adding an item to the top of the stack.
+
+<Tabs items={["Array", "Linked List"]}>
+  <Tabs.Tab>
+    Since the array implementation requires a fixed size, we must check if the stack is full before pushing an item to the stack. Then, we push an item to the stack by incrementing the `top` field and then adding the item to the `items` array at the index specified by the `top` field.
+
+    ```c
+    void push(Stack *stack, int item) {
+      if (stack->top == MAX_STACK_SIZE - 1) {
+        printf("Stack is full\n");
+
+        return;
+      }
+
+      stack->items[++stack->top] = item;
+    }
+    ```
+
+    Notice that we preincrement the `top` field before adding the item to the `items` array so that the item is added to the correct index.
+
+    The following example pushes an item to the stack:
+
+    ```c
+    Stack *stack = initStack();
+
+    push(stack, 91);
+    push(stack, 92);
+    push(stack, 93);
+    push(stack, 94);
+    push(stack, 95);
+
+    printf("Top: %d\n", stack->top); // prints 4
+    printf("Value at top: %d\n", stack->items[stack->top]); // prints 95
+    ```
+
+    For a visual of the stack, see the array implementation of the [stack definition](/docs/abstract-data-types/stack#stack-definition).
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    In the linked list implementation, we can push an item to the stack by creating a new node and setting the `next` field to the current top node. Then, we set the `top` field to the new node.
+
+    ```c
+    void push(Stack *stack, int item) {
+      Node *node = malloc(sizeof(Node));
+      node->number = item;
+      node->next = stack->top;
+      stack->top = node;
+    }
+    ```
+
+    The following example pushes an item to the stack:
+
+    ```c
+    Stack *stack = initStack();
+
+    push(stack, 91);
+    push(stack, 92);
+    push(stack, 93);
+    push(stack, 94);
+    push(stack, 95);
+
+    printf("Top: %d\n", stack->top->number); // prints 95
+    ```
+
+    For a visual of the stack, see the linked list implementation of the [stack definition](/docs/abstract-data-types/stack#stack-definition).
+
+  </Tabs.Tab>
+</Tabs>
+
+### Popping an Item from the Stack
+
+Popping an item is the same as removing an item from the top of the stack. In both implementations, we must check if the stack is empty before popping an item from the stack to prevent popping an item from an empty stack.
+
+<Tabs items={["Array", "Linked List"]}>
+  <Tabs.Tab>
+    In the array implementation, we can pop an item from the stack by returning the item at the index specified by the `top` field and decrementing the `top` field.
+
+    ```c
+    int pop(Stack *stack) {
+      if (isEmpty(stack)) {
+        printf("Stack is empty\n");
+
+        return 0;
+      }
+
+      return stack->items[stack->top--];
+    }
+    ```
+
+    Notice that we postdecrement the `top` field after returning the item so that the `top` field is decremented after the item is returned.
+
+    The following example pops an item from the stack:
+
+    ```c
+    Stack *stack = initStack();
+
+    push(stack, 91);
+    push(stack, 92);
+    push(stack, 93);
+    push(stack, 94);
+    push(stack, 95);
+
+    printf("Popped item: %d\n", pop(stack)); // prints 95
+
+    printf("Top: %d\n", stack->top); // prints 3
+    printf("Value at top: %d\n", stack->items[stack->top]); // prints 94
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    In the linked list implementation, we can pop an item from the stack by returning the item at the top node and setting the `top` field to the next node.
+
+    ```c
+    int pop(Stack *stack) {
+      if (isEmpty(stack)) {
+        printf("Stack is empty\n");
+
+        return -1;
+      }
+
+      Node *nodeAtTop = stack->top;
+      int item = nodeAtTop->number;
+
+      stack->top = stack->top->next;
+
+      free(nodeAtTop);
+
+      return item;
+    }
+    ```
+
+    The following example pops an item from the stack:
+
+    ```c
+    Stack *stack = initStack();
+
+    push(stack, 91);
+    push(stack, 92);
+    push(stack, 93);
+    push(stack, 94);
+    push(stack, 95);
+
+    printf("Popped item: %d\n", pop(stack)); // prints 95
+
+    printf("Top: %d\n", stack->top->number); // prints 94
+    ```
+
+  </Tabs.Tab>
+</Tabs>
+
+### Peeking at the Top Item
+
+Peeking at the top item is the same as accessing the top item without removing it. The only difference in the implementations is how we access the top item.
+
+<Tabs items={["Array", "Linked List"]}>
+  <Tabs.Tab>
+    In the array implementation, we can peek at the top item by returning the item at the index specified by the `top` field. We'll return `-1` if the stack is empty.
+
+    ```c
+    int peek(Stack *stack) {
+      if (isEmpty(stack)) {
+        printf("Stack is empty\n");
+
+        return -1;
+      }
+
+      return stack->items[stack->top];
+    }
+    ```
+
+    The following example peeks at the top item:
+
+    ```c
+    Stack *stack = initStack();
+
+    push(stack, 91);
+    push(stack, 92);
+    push(stack, 93);
+    push(stack, 94);
+    push(stack, 95);
+
+    printf("Top item: %d\n", peek(stack)); // prints 95
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    In the linked list implementation, we can peek at the top item by returning the item at the top node.
+
+    ```c
+    int peek(Stack *stack) {
+      if (isEmpty(stack)) {
+        printf("Stack is empty\n");
+
+        return -1;
+      }
+
+      return stack->top->number;
+    }
+    ```
+
+    The following example peeks at the top item:
+
+    ```c
+    Stack *stack = initStack();
+
+    push(stack, 91);
+    push(stack, 92);
+    push(stack, 93);
+    push(stack, 94);
+    push(stack, 95);
+
+    printf("Top item: %d\n", peek(stack)); // prints 95
+    ```
+
+  </Tabs.Tab>
+</Tabs>
+
+### Freeing the Stack
+
+Freeing the stack is the same as removing all items from the stack. This is a combination of the pop and isEmpty operations. Both implementations are the same:
+
+```c
+void freeStack(Stack *stack) {
+  while (!isEmpty(stack)) {
+    pop(stack);
+  }
+
+  free(stack);
+}
+```
+
+The following example frees the stack:
+
+```c
+Stack *stack = initStack();
+
+push(stack, 91);
+push(stack, 92);
+push(stack, 93);
+push(stack, 94);
+push(stack, 95);
+
+freeStack(stack);
+
+printf("Top: %d\n", stack->top); // prints NULL
+```
