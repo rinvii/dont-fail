@@ -3,10 +3,457 @@ title: Queue
 description: Learn about queues in C!
 ---
 
-import { Callout } from "nextra-theme-docs";
+import { Callout, Tabs } from "nextra-theme-docs";
 
 # Queue
 
-<Callout type="warning">
-  The content of this page is not yet ready. Check back in a few days.
-</Callout>
+A queue is a data structure that follows the FIFO (First In First Out) principle. This means that the first element to be inserted into the queue is the first one to be removed. A queue is similar to a line of people waiting to buy tickets at a movie theater. The first person to arrive at the line is the first person to buy a ticket and leave the line.
+
+## Queue Definition
+
+We will explore the queue definition using two different ways: arrays and linked lists.
+
+<Tabs items={["Array", "Linked List"]}>
+  <Tabs.Tab>
+    The definition of a queue using an array is as follows:
+
+    ```c
+    typedef struct {
+      int head;
+      int tail;
+      int items[MAX_ARRAY_SIZE];
+    } Queue;
+    ```
+
+    Notice that `items` field is defined as an array of size `MAX_ARRAY_SIZE`. This is because we need to know the maximum number of elements that the queue can hold. The `items` array is used to store the elements of the queue. Furthermore, the actual size of the queue is `MAX_ARRAY_SIZE - 1`. We'll cover why in more detail below.
+
+    The `head` and `tail` variables are used to keep track of the indexes of the first and last elements of the queue. To put it another way, the head is the front of the queue and the tail is the back of the queue.
+
+    Some special cases need to be considered when implementing a queue using an array. For example, what happens when the queue is empty? What happens when the queue is full?
+
+    Let's answer them now:
+
+    <Callout>
+      When the queue is empty, the `head` and `tail` should be equal. When the queue is full, `(tail + 1) % MAX_QUEUE_SIZE` should be equal to `head`.
+    </Callout>
+
+    You may be wondering why we need to consider these cases in these ways. The reason is because we are actually implementing a circular queue. This means that the queue is circular in the sense that the last element of the queue is connected to the first element of the queue. Think of circular queue as an array that wraps around back to the beginning.
+
+    Consider a circular queue with a maximum size of `MAX_ARRAY_SIZE - 1`. THe diagrams below will show 12 elements in the array, but remember that the actual size of the queue is `MAX_ARRAY_SIZE - 1`. So, only 11 elements will be valid in the queue at any given time.
+
+    The diagram below shows an example of a circular queue that would be considered empty:
+
+    ![Circular Queue Empty](/queue-array-empty.jpg)
+
+    The diagram below shows an example of a circular queue that would be considered full. Suppose we had not dequeued any items from the queue yet:
+
+    ![Circular Queue Full](/queue-array-full.jpg)
+
+    Notice that, relative to each other, the tail is behind the head by one. Of course, if we don't consider the idea of a circular queue then it would seem that the tail is ahead of the head by 11. However, since we are considering the idea of a circular queue, we know that the tail is actually behind the head by one.
+
+    The fact that the tail is behind the head by one is important because it allows us to distinguish between an empty queue and a full queue. In this case, we can say that the queue is full when `(tail + 1) % MAX_QUEUE_SIZE` is equal to `head` which it is in the diagram above.
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    The definition of a queue using a linked list is as follows:
+
+    ```c
+    typedef struct Node {
+      int data;
+      struct Node *next;
+    } Node;
+
+    typedef struct {
+      Node *head;
+      Node *tail;
+    } Queue;
+    ```
+
+    Notice that the `head` and `tail` variables are pointers to the first and last nodes of the queue. The `head` pointer points to the first node of the queue and the `tail` pointer points to the last node of the queue.
+
+    The `head` and `tail` pointers are used to keep track of the first and last nodes of the queue.
+
+    Just like with the array implementation, we need to consider when the queue is empty and when the queue is full. With linked lists, they are much easier to consider. In fact, at least in this course, we will never consider a linked list to be full. This is because we can always allocate more memory for a linked list.
+
+    <Callout>
+      When the queue is empty, the `head` is `NULL`. The queue will never be full because we can always allocate more memory for a linked list.
+    </Callout>
+
+    Already we can understand that the linked list implementation of a queue is much simpler than the array implementation.
+
+    The diagram below shows an example of a linked list queue that has 3 itemes queued up:
+
+    ![Linked List Queue](/queue-linked-list.jpg)
+
+  </Tabs.Tab>
+</Tabs>
+
+## Queue Operations
+
+Queues have two main operations:
+
+- **Enqueue**: Add an item to the back of the queue. If the queue is empty, there won't really be a "back" of the queue. In this case, the item will be added to an empty queue.
+- **Dequeue**: Remove an item from the front of the queue. If the queue is empty, there won't really be a "front" of the queue. In this case, the item will be removed from an empty queue.
+
+Aditionally, we will also implement the following operations:
+
+- **initQuue**: Initialize the queue.
+- **isEmpty**: Check if the queue is empty.
+- **isFull**: Check if the queue is full.
+- **freeQueue**: Free the memory allocated for the queue.
+- **length**: Get the number of items in the queue.
+
+### initQueue
+
+The initQueue operation initializes the queue. Both the array and linked list implementations manually allocate memory for the queue. Thus, we need to free the memory allocated for the queue when we are done using it.
+
+<Tabs items={["Array", "Linked List"]}>
+  <Tabs.Tab>
+    In the array implementation, we can initialize the queue by setting the `head` and `tail` to `0`. This is because the `head` and `tail` are used to keep track of the indexes of the first and last elements of the queue. Since the queue is empty, the first and last elements are at index `0`.
+
+    ```c
+    void initQueue() {
+      Queue queue = malloc(sizeof(Queue));
+      queue->head = 0;
+      queue->tail = 0;
+    }
+    ```
+
+    We initialize as follows:
+
+    ```c
+    Queue *queue = initQueue();
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    In the linked list implementation, we can initialize the queue by setting the `head` and `tail` to `NULL`. This is because the `head` and `tail` are used to keep track of the first and last nodes of the queue. Since the queue is empty, there are no nodes in the queue.
+
+    ```c
+    void initQueue() {
+      Queue queue = malloc(sizeof(Queue));
+      queue->head = NULL;
+      queue->tail = NULL;
+    }
+    ```
+
+    We initialize as follows:
+
+    ```c
+    Queue *queue = initQueue();
+    ```
+
+    This is basically just a struct with two members which are pointers to the first and last nodes of the queue.
+
+  </Tabs.Tab>
+</Tabs>
+
+### isEmpty
+
+The isEmpty operation checks if the queue is empty.
+
+<Tabs items={["Array", "Linked List"]}>
+  <Tabs.Tab>
+    In the array implementation, we can check if the queue is empty by checking if the `head` and `tail` are equal. If they are equal, then the queue is empty and we return `1`. Otherwise, the queue is not empty and we return `0`.
+
+    ```c
+    int isEmpty(Queue *queue) {
+      return queue->head == queue->tail;
+    }
+    ```
+
+    We can use it as follows:
+
+    ```c
+    Queue *queue = initQueue();
+
+    if (isEmpty(queue)) {
+      printf("Queue is empty\n"); // This will be printed
+    } else {
+      printf("Queue is not empty\n");
+    }
+    ```
+
+  </Tabs.Tab>
+
+  <Tabs.Tab>
+    In the linked list implementation, we can check if the queue is empty by checking if the `head` is `NULL`. If the `head` is `NULL`, then the queue is empty and we return `1`. Otherwise, the queue is not empty and we return `0`.
+
+    ```c
+    int isEmpty(Queue *queue) {
+      return queue->head == NULL;
+    }
+    ```
+
+    We can use it as follows:
+
+    ```c
+    Queue *queue = initQueue();
+
+    if (isEmpty(queue)) {
+      printf("Queue is empty\n"); // This will be printed
+    } else {
+      printf("Queue is not empty\n");
+    }
+    ```
+
+  </Tabs.Tab>
+
+</Tabs>
+
+### isFull
+
+The isFull operation checks if the queue is full. This operation is only applicable to the array implementation. This is because the linked list implementation will never be full. When the queue is full, `(tail + 1) % MAX_QUEUE_SIZE` is equal to `head`. We return `1` if the queue is full and `0` if the queue is not full.
+
+```c
+int isFull(Queue *queue) {
+  return (queue->tail + 1) % MAX_QUEUE_SIZE == queue->head;
+}
+```
+
+We can use it as follows:
+
+```c
+Queue *queue = initQueue();
+
+if (isFull(queue)) {
+  printf("Queue is full\n");
+} else {
+  printf("Queue is not full\n"); // This will be printed
+}
+```
+
+### Enqueue
+
+The enqueue operation pushes an item into the queue. The array and linked list implementations are very different from each other.
+
+<Tabs items={["Array", "Linked List"]}>
+  <Tabs.Tab>
+    In the array implementation, we can enqueue an item by first checking if it's full. If it's full, then we can't enqueue the item. Otherwise, we increment the `tail` by one and set the item at the `tail` to the item we want to enqueue.
+
+    ```c
+    void enqueue(Queue *queue, int item) {
+      if (isFull(queue)) {
+        printf("Queue is full\n");
+        return;
+      }
+
+      queue->tail = (queue->tail + 1) % MAX_QUEUE_SIZE;
+      queue->items[queue->tail] = item;
+    }
+    ```
+
+    We can use it as follows:
+
+    ```c
+    Queue *queue = initQueue();
+
+    enqueue(queue, 91);
+    enqueue(queue, 92);
+    enqueue(queue, 93);
+
+    printf("Head: %d\n", queue->items[queue->head]); // 91
+    printf("Tail: %d\n", queue->items[queue->tail]); // 93
+    ```
+
+    The diagram below shows the queue after the three items have been enqueued:
+
+    ![Enqueue Array](/queue-array-enqueue.jpg)
+
+  </Tabs.Tab>
+
+  <Tabs.Tab>
+    In the linked list implementation, we can enqueue an item by first allocating memory for a new node. Then, we check if the queue is empty. If it's empty, then we set the `head` and `tail` to the new node. Otherwise, we set the `next` of the current `tail` to the new node and set the `tail` to the new node.
+
+    ```c
+    void enqueue(Queue *queue, int item) {
+      Node *node = malloc(sizeof(Node));
+      node->data = item;
+      node->next = NULL;
+
+      if (isEmpty(queue)) {
+        queue->head = node;
+        queue->tail = node;
+      } else {
+        queue->tail->next = node;
+        queue->tail = node;
+      }
+    }
+    ```
+
+    We can use it as follows:
+
+    ```c
+    Queue *queue = initQueue();
+
+    enqueue(queue, 91);
+    enqueue(queue, 92);
+    enqueue(queue, 93);
+
+    printf("Head: %d\n", queue->head->data); // 91
+    printf("Tail: %d\n", queue->tail->data); // 93
+    ```
+
+    For a visual of this, refer to the section [above](/docs/abstract-data-types/queue#queue-definition) on the linked list definition of a queue.
+
+    The diagram below shows the two cases of enqueueing an item into a queue implemented using a linked list:
+
+    ![Enqueue Linked List](/queue-linked-list-enqueue.jpg)
+
+    Notice the blue coloring of the diagram indicating the steps that were taken.
+
+  </Tabs.Tab>
+</Tabs>
+
+### Dequeue
+
+The dequeue operation removes an item from the queue.
+
+<Tabs items={["Array", "Linked List"]}>
+  <Tabs.Tab>
+    In the array implementation, we can dequeue an item by first checking if it's empty. If it's empty, then we can't dequeue an item. Otherwise, we increment the `head` by one and return the item at the at the index `head`.
+
+    ```c
+    int dequeue(Queue *queue) {
+      if (isEmpty(queue)) {
+        printf("Queue is empty\n");
+
+        return -1; // -1 indicates that the queue is empty, we can also exit the program
+      }
+
+      queue->head = (queue->head + 1) % MAX_QUEUE_SIZE;
+
+      return queue->items[queue->head];
+    }
+    ```
+
+    Notice that we wrap around the array if necessary when incrementing the `head`.
+
+    We can use it as follows:
+
+    ```c
+    Queue *queue = initQueue();
+
+    enqueue(queue, 91);
+    enqueue(queue, 92);
+    enqueue(queue, 93);
+
+    int item = dequeue(queue);
+
+    printf("Item: %d\n", item); // 91
+    ```
+
+    The diagram below shows the queue after the three items have been enqueued and dequeued:
+
+    ![Dequeue Array](/queue-array-dequeue.jpg)
+
+  </Tabs.Tab>
+
+  <Tabs.Tab>
+    In the linked list implementation, we can dequeue an item by first checking if it's empty. If it's empty, then we can't dequeue an item. Otherwise, we set the `head` to the `next` of the current `head`.
+
+    ```c
+    int dequeue(Queue *queue) {
+      if (isEmpty(queue)) {
+        printf("Queue is empty\n");
+        return -1;
+      }
+
+      Node *nodeAtFront = queue->head;
+      int item = nodeAtFront->data;
+
+      queue->head = queue->head->next;
+
+      // If the queue is now empty, set the tail to NULL
+      if (queue->head == NULL) {
+        queue->tail = NULL;
+      }
+
+      free(node);
+
+      return item;
+    }
+    ```
+
+    When the queue is empty as a result of the dequeue, we set the `tail` to `NULL` because there are no more nodes in the queue.
+
+    We can use it as follows:
+
+    ```c
+    Queue *queue = initQueue();
+
+    enqueue(queue, 91);
+    enqueue(queue, 92);
+    enqueue(queue, 93);
+
+    int item = dequeue(queue);
+
+    printf("Item: %d\n", item); // 91
+    ```
+
+  </Tabs.Tab>
+</Tabs>
+
+### Length
+
+The length operation returns the number of items in the queue.
+
+<Tabs items={["Array", "Linked List"]}>
+  <Tabs.Tab>
+    In the array implementation, we can get the length of the queue by subtracting the `head` from the `tail`. However, we need to consider the case where the `tail` is behind the `head` by one. In this case, we need to add `MAX_QUEUE_SIZE` to the `tail` before subtracting the `head` from the `tail`.
+
+    ```c
+    int length(Queue *queue) {
+      if (queue->tail >= queue->head) {
+        return queue->tail - queue->head;
+      } else {
+        return queue->tail + MAX_QUEUE_SIZE - queue->head;
+      }
+    }
+    ```
+
+    We can use it as follows:
+
+    ```c
+    Queue *queue = initQueue();
+
+    enqueue(queue, 91);
+    enqueue(queue, 92);
+    enqueue(queue, 93);
+
+    printf("Length: %d\n", length(queue)); // 3
+    ```
+
+  </Tabs.Tab>
+
+  <Tabs.Tab>
+    In the linked list implementation, we can get the length of the queue by iterating through the queue and counting the number of nodes.
+
+    ```c
+    int length(Queue *queue) {
+      int length = 0;
+      Node *node = queue->head;
+
+      while (node != NULL) {
+        length++;
+        node = node->next;
+      }
+
+      return length;
+    }
+    ```
+
+    We can use it as follows:
+
+    ```c
+    Queue *queue = initQueue();
+
+    enqueue(queue, 91);
+    enqueue(queue, 92);
+    enqueue(queue, 93);
+
+    printf("Length: %d\n", length(queue)); // 3
+    ```
+
+  </Tabs.Tab>
+</Tabs>
